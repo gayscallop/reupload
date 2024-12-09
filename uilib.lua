@@ -2,8 +2,8 @@
     task.wait()
  until game:IsLoaded()
  
- if not isfile("anti.solutions") then
-    makefolder("anti.solutions")
+ if not isfile("freakhack") then
+    makefolder("freakhack")
  end
  
  ---// Variables
@@ -31,7 +31,7 @@
  local tabviewer = menu.bg.bg.bg.bg.bg.bg.tabbuttons
  
  local library = {
-    Title = 'anti.font color="rgb(245, 66, 230)">solutions</font> | <font color="rgb(245, 66, 230)">Pre-Build</font>',
+    Title = 'freakfont color="rgb(245, 66, 230)">hack</font> | <font color="rgb(245, 66, 230)">Pre-Build</font>',
     AnimatedText = false,
     keybind = Enum.KeyCode.End,
     Colors = {

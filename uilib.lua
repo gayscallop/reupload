@@ -1859,7 +1859,7 @@ function contains(list, x)
 if v == x then return true end
 end return false end
 function library:createConfig()
-   makefolder("anti.solutions")
+   makefolder("freakhack")
    local name = library.flags["config_name"]
    if contains(library.options["config_box"].values, name) then return library:Notify(name..".cfg already exists!", 5) end
    if name == "" then return library:Notify("You need to put a name in!", 5) end
@@ -1871,13 +1871,13 @@ if typeof(v) == "Color3" then jig[i] = {v.R,v.G,v.B}
    else jig[i] = v
    end
 end
-writefile("anti.solutions/"..name..".cfg",game:GetService("HttpService"):JSONEncode(jig))
+writefile("freakhack/"..name..".cfg",game:GetService("HttpService"):JSONEncode(jig))
 library:Notify("Succesfully created config "..name..".cfg!", 5)
 library:refreshConfigs()
    end
  
    function library:saveConfig()
-makefolder("anti.solutions")
+makefolder("freakhack")
 local name = library.flags["config_box"]
 local jig = {}
 for i,v in next, library.flags do
@@ -1927,7 +1927,7 @@ end;end
  
 function library:refreshConfigs()
    local tbl = {}
-   for i,v in next, listfiles("anti.solutions") do table.insert(tbl,v) end
+   for i,v in next, listfiles("freakhack") do table.insert(tbl,v) end
    library.options["config_box"].refresh(tbl)
 end
 end)()

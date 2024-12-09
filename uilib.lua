@@ -123,7 +123,7 @@
                 wait(0.2)
             end 
         else
-            menu.bg.pre.Text = 'anti.<font color="rgb(245, 66, 230)">solutions</font> | <font color="rgb(245, 66, 230)">Project delta</font>'
+            menu.bg.pre.Text = 'freak<font color="rgb(245, 66, 230)">hack</font> | <font color="rgb(245, 66, 230)">Project Delta</font>'
         end
     end
  end) 

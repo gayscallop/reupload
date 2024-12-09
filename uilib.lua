@@ -31,7 +31,7 @@
  local tabviewer = menu.bg.bg.bg.bg.bg.bg.tabbuttons
  
  local library = {
-    Title = 'freakfont color="rgb(245, 66, 230)">hack</font> | <font color="rgb(245, 66, 230)">Pre-Build</font>',
+    Title = 'freakfont color="rgb(245, 66, 230)">hack</font> | <font color="rgb(245, 66, 230)">build</font>',
     AnimatedText = false,
     keybind = Enum.KeyCode.End,
     Colors = {
@@ -114,18 +114,7 @@
         'anti.<font color="rgb(245, 66, 230)">solutio</font>', 'anti.<font color="rgb(245, 66, 230)">soluti</font> ',
         'anti.<font color="rgb(245, 66, 230)">solut</font> ', 'anti.<font color="rgb(245, 66, 230)">solu</font> ',
         'anti.<font color="rgb(245, 66, 230)">sol</font> ', 'anti.<font color="rgb(245, 66, 230)">so</font> ',
-        'anti.<font color="rgb(245, 66, 230)">s</font> ', 'anti.', 'anti', 'ant', 'an', 'a',
-        -- Bozos
-        'G', 'Ga', 'Gay',
-        'Ga', 'G',
-        -- Ak 47
-        'A', 'Ak', 'Ak-', 'Ak-4', 'Ak-47',
-        'Ak-4', 'Ak-', 'Ak', 'A',
-        -- Credits
-        'M', 'Ma', 'Mad', 'Made', 'Made B', 'Made By', 'Made By:', 'Made By: l', 'Made By: lk', 'Made By: lks',
-        'Made By: lksi', 'Made By: lksiw', 'Made By: lksiwj', 'Made By: lksiwja', 'Made by: lksiwjas', 'Made By: lksiwjas.',
-        'Made By: lksiwjas', 'Made By: lksiwja', 'Made By: lksiwj', 'Made By: lksiw', 'Made By: lksi', 'Made By: lks', 'Made By: lk',
-        'Made By: l', 'Made By:', 'Made By', 'Made B', 'Made', 'Mad', 'Ma', 'M'
+        'anti.<font color="rgb(245, 66, 230)">s</font> ', 'anti.', 'anti', 'ant', 'an', 'a'
     }
     while wait(0.2) do
         if library.AnimatedText then

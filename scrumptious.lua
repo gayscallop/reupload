@@ -1979,7 +1979,7 @@ end)
      uisettings:addToggle({text = "watermark",default = true,flag = "watermark_toggle",callback = function(Value)
          Text.Visible = Value
      end})
-     uisettings:addToggle({text = "animated title",default = true,flag = "animated_text",callback = function(Value)
+     uisettings:addToggle({text = "animated title",default = false,flag = "animated_text",callback = function(Value)
          library.AnimatedText = Value
      end})
      uisettings:addDivider()

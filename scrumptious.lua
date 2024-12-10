@@ -927,7 +927,7 @@ end)
                     if esp.settings.distance.enabled and localplayer.Character and localplayer.Character:FindFirstChild("HumanoidRootPart") then
                         v.distance.Position = Vector2new(BoxSize.X / 2 + BoxPos.X, BottomOffset)
                         v.distance.Outline = esp.settings.distance.outline
-                        v.distance.Text = .. mathfloor((hrp.Position - localplayer.Character.HumanoidRootPart.Position).Magnitude  / 3.571) .. " meters"
+                        v.distance.Text = "" ..math.floor((hrp.Position - localplayer.Character.HumanoidRootPart.Position).Magnitude  / 3.571).. " meters"
                         v.distance.Color = esp.settings.distance.color
                         BottomOffset = BottomOffset + 15
 

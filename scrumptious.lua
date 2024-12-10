@@ -165,7 +165,7 @@ end
  local esp = {
     players = {},
     objects = {},
-    enabled = false,
+    enabled = true,
     teamcheck = false,
     fontsize = 13,
     font = 3,

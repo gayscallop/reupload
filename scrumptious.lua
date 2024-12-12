@@ -34,10 +34,7 @@ local enables = {
         Radius = 25,
         Color = Color3.fromRGB(180, 50, 255),
         Thickness = 1.7,
-        Outline = false,
-        Resize = false,
         Gap = 10,
-        TheGap = false,
         Text = {
             Logo = false,
             LogoColor = Color3.new(1, 1, 1),
@@ -165,7 +162,7 @@ end
  local esp = {
     players = {},
     objects = {},
-    enabled = true,
+    enabled = false,
     teamcheck = false,
     fontsize = 13,
     font = 3,
@@ -451,46 +448,6 @@ game:GetService("RunService").RenderStepped:connect(function()
         --
         for index, line in pairs(lines) do
             index = index
-            if enables.cursor.Resize then
-                x = {
-                    pos.X
-                        + (
-                            math.cos(angle + (index * (math.pi / 2)))
-                            * (enables.cursor.Radius + ((enables.cursor.Radius * math.sin(angle)) / 9))
-                        ),
-                    pos.X
-                        + (
-                            math.cos(angle + (index * (math.pi / 2)))
-                            * (
-                                (enables.cursor.Radius - 20)
-                                - (
-                                    enables.cursor.TheGap
-                                        and (((enables.cursor.Radius - 20) * math.cos(angle)) / 4)
-                                    or (((enables.cursor.Radius - 20) * math.cos(angle)) - 4)
-                                )
-                            )
-                        ),
-                }
-                y = {
-                    pos.Y
-                        + (
-                            math.sin(angle + (index * (math.pi / 2)))
-                            * (enables.cursor.Radius + ((enables.cursor.Radius * math.sin(angle)) / 9))
-                        ),
-                    pos.Y
-                        + (
-                            math.sin(angle + (index * (math.pi / 2)))
-                            * (
-                                (enables.cursor.Radius - 20)
-                                - (
-                                    enables.cursor.TheGap
-                                        and (((enables.cursor.Radius - 20) * math.cos(angle)) / 4)
-                                    or (((enables.cursor.Radius - 20) * math.cos(angle)) - 4)
-                                )
-                            )
-                        ),
-                }
-            else
                 x = {
                     pos.X + (math.cos(angle + (index * (math.pi / 2))) * enables.cursor.Radius),
                     pos.X
@@ -521,18 +478,11 @@ game:GetService("RunService").RenderStepped:connect(function()
                             )
                         ),
                 }
-            end
-            --
             line[1].Visible = true
             line[1].Color = enables.cursor.Color
             line[1].From = Vector2.new(x[2], y[2])
             line[1].To = Vector2.new(x[1], y[1])
             line[1].Thickness = enables.cursor.Thickness
-            --
-            line[2].Visible = enables.cursor.Outline
-            line[2].From = Vector2.new(x[2], y[2])
-            line[2].To = Vector2.new(x[1], y[1])
-            line[2].Thickness = enables.cursor.Thickness + 2.5
         end
     else
         outline.Visible = false
@@ -546,13 +496,13 @@ game:GetService("RunService").RenderStepped:connect(function()
         -- Advertisement
         Ad.Visible = enables.main.playerinfo
         -- Target
-        Target.Text = "Target : "..enables.main.currentname.Name
+        Target.Text = "Target: "..enables.main.currentname.Name
         Target.Visible = enables.main.playerinfo
         -- Health
-        Health.Text = "Health : "..tostring(math.floor(enables.main.currentname.Character.Humanoid.Health)).."/100"
+        Health.Text = "Health: "..tostring(math.floor(enables.main.currentname.Character.Humanoid.Health)).."/100"
         Health.Visible = enables.main.playerinfo
         -- Distance
-        Meters.Text = "Distance : "..math.ceil((camera.CFrame.Position - functions:TargetPlayer().Position).Magnitude / 3.571).."m"
+        Meters.Text = "Distance: "..math.ceil((camera.CFrame.Position - functions:TargetPlayer().Position).Magnitude / 3.571).."m"
         Meters.Visible = enables.main.playerinfo
         -- Visible
         Visible.Visible = enables.main.playerinfo
@@ -620,19 +570,18 @@ end)
     maintab1:addSlider({text = "z value:", min = -5, max = 5, suffix = "%", flag = "viewmodel_z", float = 0.1, default = 0, callback = function()end})
     maintab1:addDivider()
     maintab1:addToggle({text = "mainswitch", flag = "enable_chams", callback = function()end})
-    maintab1:addToggle({text = "highlight chams", flag = "highlight_chams", callback = function()end}):addColorpicker({text = 'color', ontop = true, flag = "highlight_color", color = Color3.new(0,0,0), callback = function()end})
-    maintab1:addToggle({text = "cloth chams", flag = "arm_chams", callback = function()end}):addColorpicker({text = 'color', ontop = true, flag = "arm_color", color = Color3.new(0,0,0), callback = function()end})
+    maintab1:addToggle({text = "cloth chams", flag = "arm_chams", callback = function()end}):addColorpicker({text = 'color', ontop = true, flag = "cloth_color", color = Color3.new(0,0,0), callback = function()end})
     maintab1:addToggle({text = "gun chams", flag = "gun_chams", callback = function()end}):addColorpicker({text = 'color', ontop = true, flag = "gun_color", color = Color3.new(0,0,0), callback = function()end})
-    maintab1:addToggle({text = "arm chams", flag = "cloth_chams", callback = function()end}):addColorpicker({text = 'color', ontop = true, flag = "cloth_color", color = Color3.new(0,0,0), callback = function()end})
+    maintab1:addToggle({text = "arm chams", flag = "arm_chams", callback = function()end}):addColorpicker({text = 'color', ontop = true, flag = "arm_color", color = Color3.new(0,0,0), callback = function()end})
     maintab1:addDivider()
-    maintab1:addList({text = "cloth material:",multiselect = false,values = {'ForceField', 'Neon', 'SmoothPlastic', 'Glass'}, flag = "arm_material", callback = function()end})
+    maintab1:addList({text = "cloth material:",multiselect = false,values = {'ForceField', 'Neon', 'SmoothPlastic', 'Glass'}, flag = "cloth_material", callback = function()end})
     maintab1:addList({text = "gun material:",multiselect = false,values = {'ForceField', 'Neon', 'SmoothPlastic', 'Glass'}, flag = "gun_material", callback = function()end})
-    maintab1:addList({text = "arm material:",multiselect = false,values = {'ForceField', 'Neon', 'SmoothPlastic', 'Glass'}, flag = "cloth_material", callback = function()end})
+    maintab1:addList({text = "arm material:",multiselect = false,values = {'ForceField', 'Neon', 'SmoothPlastic', 'Glass'}, flag = "arm_material", callback = function()end})
     maintab1:addDivider()
     maintab1:addLabel({text = "tranparency"})
-    maintab1:addSlider({text = "cloth value:", min = 0, max = 1, suffix = "%", flag = "trans_arm", float = 0.1, default = 0, callback = function()end})
+    maintab1:addSlider({text = "cloth value:", min = 0, max = 1, suffix = "%", flag = "trans_cloth", float = 0.1, default = 0, callback = function()end})
     maintab1:addSlider({text = "gun value:", min = 0, max = 1, suffix = "%", flag = "trans_gun", float = 0.1, default = 0, callback = function()end})
-    maintab1:addSlider({text = "arm value:", min = 0, max = 1, suffix = "%", flag = "trans_cloth", float = 0.1, default = 0, callback = function()end})
+    maintab1:addSlider({text = "arm value:", min = 0, max = 1, suffix = "%", flag = "trans_arm", float = 0.1, default = 0, callback = function()end})
 
     maintab1:addToggle({text = "skin changer!", flag = "enable skins", callback = function()
 
@@ -657,7 +606,7 @@ end)
 
  --// Gun Mods
  do
-    maintab2:addToggle({text = "remove drop", callback = function(Value)
+    maintab2:addToggle({text = "no drop", callback = function(Value)
         if Value and replicatestorage:FindFirstChild("AmmoTypes") then
 			for i,v in ipairs(replicatestorage.AmmoTypes:GetChildren()) do
 				if v then
@@ -675,11 +624,11 @@ end)
             end
 		end
     end})
-    maintab2:addToggle({text = "remove recoil", callback = function(Value)
+    maintab2:addToggle({text = "no recoil", callback = function(Value)
         if Value and replicatestorage:FindFirstChild("AmmoTypes") then
 			for i,v in ipairs(replicatestorage.AmmoTypes:GetChildren()) do
 				if v then
-					v:SetAttribute("RecoilStrength", 0)
+					v:SetAttribute("RecoilStrength", 0.1)
 				end
 			end
 		elseif not Value and replicatestorage:FindFirstChild("AmmoTypes") then
@@ -693,11 +642,13 @@ end)
             end
 		end
     end})
-    maintab2:addToggle({text = "force tracer", callback = function(Value)
+    maintab2:addToggle({text = "no spread", callback = function(Value)
         if Value and replicatestorage:FindFirstChild("AmmoTypes") then
 			for i,v in ipairs(replicatestorage.AmmoTypes:GetChildren()) do
 				if v then
-					v:SetAttribute("Tracer", true)
+					if v:GetAttribute("AccuracyDeviation") then
+						v:SetAttribute("AccuracyDeviation", 0.1)
+					end
 				end
 			end
 		elseif not Value and replicatestorage:FindFirstChild("AmmoTypes") then
@@ -705,31 +656,15 @@ end)
                 if v then
                     local realAmmo = realAmmoTypes:FindFirstChild(v.Name)
                     if realAmmo then
-                        v:SetAttribute("Tracer", realAmmo:GetAttribute("Tracer"))
+                        if v:GetAttribute("AccuracyDeviation") then
+                            v:SetAttribute("AccuracyDeviation", realAmmo:GetAttribute("AccuracyDeviation"))
+                        end
                     end
                 end
             end
 		end
     end})
-    maintab2:addToggle({text = "drag", callback = function(Value)
-        if Value and replicatestorage:FindFirstChild("AmmoTypes") then
-			for i,v in ipairs(replicatestorage.AmmoTypes:GetChildren()) do
-				if v then
-					v:SetAttribute("Drag", 0)
-				end
-			end
-		elseif not Value and replicatestorage:FindFirstChild("AmmoTypes") then
-			for i,v in ipairs(replicatestorage.AmmoTypes:GetChildren()) do
-                if v then
-                    local realAmmo = realAmmoTypes:FindFirstChild(v.Name)
-                    if realAmmo then
-                        v:SetAttribute("Drag", realAmmo:GetAttribute("Drag"))
-                    end
-                end
-            end
-		end
-    end})
-    maintab2:addToggle({text = "insta hit", callback = function(Value)
+        maintab2:addToggle({text = "instant hit", callback = function(Value)
         if Value and replicatestorage:FindFirstChild("AmmoTypes") then
 			for i,v in ipairs(replicatestorage.AmmoTypes:GetChildren()) do
 				if v then
@@ -747,42 +682,31 @@ end)
             end
 		end
     end})
-    maintab2:addToggle({text = "remove spread", callback = function(Value)
-        if Value and replicatestorage:FindFirstChild("AmmoTypes") then
-			for i,v in ipairs(replicatestorage.AmmoTypes:GetChildren()) do
-				if v then
-					if v:GetAttribute("AccuracyDeviation") then
-						v:SetAttribute("AccuracyDeviation", 0)
-					end
-				end
-			end
-		elseif not Value and replicatestorage:FindFirstChild("AmmoTypes") then
-			for i,v in ipairs(replicatestorage.AmmoTypes:GetChildren()) do
-                if v then
-                    local realAmmo = realAmmoTypes:FindFirstChild(v.Name)
-                    if realAmmo then
-                        if v:GetAttribute("AccuracyDeviation") then
-                            v:SetAttribute("AccuracyDeviation", realAmmo:GetAttribute("AccuracyDeviation"))
-                        end
-                    end
-                end
-            end
-		end
-    end})
  end
 
  --// Crosshair
  local maintabgroup1 = tabs.combat:createGroup('right', 'Crosshair')
  do
-    maintabgroup1:addToggle({text = "Enable", callback = function(first) enables.cursor.Enabled = first end}):addColorpicker({text = "Color", callback = function(x) enables.cursor.Color = x end})
-    maintabgroup1:addToggle({text = "From Barrel", callback = function(first) enables.cursor.CustomPos = first end})
-    maintabgroup1:addToggle({text = "Outline", callback = function(first) enables.cursor.Outline = first end})
-    maintabgroup1:addToggle({text = "Resize", callback = function(first) enables.cursor.Resize = first end})
-    maintabgroup1:addToggle({text = "Gap", callback = function(first) enables.cursor.TheGap = first end})
-    maintabgroup1:addSlider({text = "Speed",flag = "cursor_speed",default = 3, min = -5, max = 0, suffix="", callback = function(State) enables.cursor.Speed = State end})
-    maintabgroup1:addSlider({text = "Radius",flag = "radius_cur", default = 25, min = 0, max = 50, suffix="", callback = function(State) enables.cursor.Radius = State end})
-    maintabgroup1:addSlider({text = "Thickness",flag = "thick_ness",default = 2, min = 0, max = 5,suffix ="", callback = function(State) enables.cursor.Thickness  = State end})
-    maintabgroup1:addSlider({text = "Gap",flag = "aada",default = 5,min = 0, max = 50, suffix = "", callback = function(State) enables.cursor.Gap = State end})
+    maintabgroup1:addToggle({text = "Enable", callback = function(first) 
+        enables.cursor.Enabled = first 
+    end}):addColorpicker({text = "Color", callback = function(x) 
+        enables.cursor.Color = x 
+    end})
+    maintabgroup1:addToggle({text = "From Barrel", callback = function(first) 
+        enables.cursor.CustomPos = first 
+    end})
+    maintabgroup1:addSlider({text = "Speed",flag = "cursor_speed",default = 3, min = -5, max = 0, suffix="", callback = function(State) 
+        enables.cursor.Speed = State 
+    end})
+    maintabgroup1:addSlider({text = "Radius",flag = "radius_cur", default = 25, min = 0, max = 50, suffix="", callback = function(State) 
+        enables.cursor.Radius = State 
+    end})
+    maintabgroup1:addSlider({text = "Thickness",flag = "thick_ness",default = 2, min = 0, max = 5,suffix ="", callback = function(State) 
+        enables.cursor.Thickness  = State 
+    end})
+    maintabgroup1:addSlider({text = "Gap",flag = "crosshair_gap",default = 5,min = 0, max = 50, suffix = "", callback = function(State) 
+        enables.cursor.Gap = State 
+    end})
  end
  --// Visual Function ESP
     esp.NewDrawing = function(type, properties)
@@ -1187,6 +1111,7 @@ end)
                                     (Path:FindFirstChildOfClass("MeshPart").Position -
                                         game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude / 3
                                 ) .. "m"
+                                BotEsp2.Visible = true
                             else
                                 BotEsp2.Visible = false
                             end
@@ -1199,7 +1124,7 @@ end)
                         else
                             BotEsp3.Visible = false
                         end
-                        BotEsp.Visible = esp.customsettings.aidistance.enabled
+                        BotEsp.Visible = esp.customsettings.ai.enabled
                     else
                         BotEsp.Visible = false
                         BotEsp2.Visible = false
@@ -1308,7 +1233,7 @@ end)
                                 CorpseEsp2.Visible = false
                             end
                         end
-                        CorpseEsp.Visible = esp.customsettings.corpsedistance.enabled
+                        CorpseEsp.Visible = esp.customsettings.corpse.enabled
                     else
                         CorpseEsp.Visible = false
                         CorpseEsp2.Visible = false
@@ -1431,7 +1356,7 @@ end)
 
  local visualtabgroup2 = tabs.visuals:createGroup('center', 'Extra')
  do
-    visualtabgroup2:addToggle({text = "Enabled", flag = "esp_enabled", callback = function() esp.customsettings.enabled = library.flags['esp_enabled'] end})
+    visualtabgroup2:addToggle({text = "Enabled", flag = "customesp_enabled", callback = function() esp.customsettings.enabled = library.flags['customesp_enabled'] end})
     visualtabgroup2:addToggle({text = "Corpse", flag = "corpse_enabled", callback = function() esp.customsettings.corpse.enabled = library.flags['corpse_enabled'] end}):addColorpicker({text = 'Color', ontop = true, flag = "corpse_color", color = Color3.new(1,1,1), callback = function() esp.customsettings.corpse.enabled = library.flags['corpse_color'] end})
     visualtabgroup2:addToggle({text = "Corpse Distance", flag = "corpsedis_enabled", callback = function() esp.customsettings.corpsedistance.enabled = library.flags['corpsedis_enabled'] end}):addColorpicker({text = 'Color', ontop = true, flag = "corpsedis_color", color = Color3.new(1,1,1), callback = function() esp.customsettings.corpsedistance.enabled = library.flags['corpsedis_color'] end})
     visualtabgroup2:addToggle({text = "Bot", flag = "bot_enabled", callback = function() esp.customsettings.ai.enabled = library.flags['bot_enabled'] end}):addColorpicker({text = 'Color', ontop = true, flag = "bot_color", color = Color3.new(1,1,1), callback = function() esp.customsettings.ai.enabled = library.flags['bot_color'] end})
@@ -1439,8 +1364,8 @@ end)
     visualtabgroup2:addToggle({text = "Bot Health", flag = "bothealth_enabled", callback = function() esp.customsettings.aihealth.enabled = library.flags['bothealth_enabled'] end}):addColorpicker({text = 'Color', ontop = true, flag = "bothealth_color", color = Color3.new(1,1,1), callback = function() esp.customsettings.aihealth.enabled = library.flags['bothealth_color'] end})
     visualtabgroup2:addToggle({text = "Extract", flag = "ext_enabled", callback = function() esp.customsettings.extract.enabled = library.flags['ext_enabled'] end}):addColorpicker({text = 'Color', ontop = true, flag = "ext_color", color = Color3.new(1,1,1), callback = function() esp.customsettings.extract.enabled = library.flags['ext_color'] end})
     visualtabgroup2:addToggle({text = "Extract Distance", flag = "extd_enabled", callback = function() esp.customsettings.extractdistance.enabled = library.flags['extd_enabled'] end}):addColorpicker({text = 'Color', ontop = true, flag = "extd_color", color = Color3.new(1,1,1), callback = function() esp.customsettings.extractdistance.enabled = library.flags['extd_color'] end})
-    visualtabgroup2:addSlider({text = "Distance", min = 0, max = 10000, suffix = "m", float = 1, default = 5000, flag = "esp_distance",callback = function(Value)
-        esp.customsettings.maxdist = Value
+    visualtabgroup2:addSlider({text = "Distance", min = 0, max = 10000, suffix = "m", float = 1, default = 5000, flag = "customesp_distance",callback = function(Value)
+        esp.customsettings.maxdist = library.flags['customesp_distance']
     end})
  end
 
@@ -1822,13 +1747,6 @@ function functions:silentaim()
                         end
                     end
                 end
-                if library.flags.highlight_chams then
-                    local highlightchams = Instance.new("Highlight")
-                    highlightchams.FillTransparency = 1
-                    highlightchams.OutlineColor = library.flags.highlight_color
-                    highlightchams.OutlineTransparency = 0
-                    highlightchams.Parent = View
-                end
             end
         end
     end
@@ -1972,14 +1890,14 @@ end)
  --
  do
      uisettings:addToggle({text = "menu bind",default = true,flag = "menubind_toggle",callback = function(Value)
-     end}):addKeybind({text = "menu bind",type = "toggle",key = Enum.KeyCode.Insert,flag = "menubindkeybind_toggle",callback = function(Value)
+     end}):addKeybind({text = "menu bind",type = "toggle",key = Enum.KeyCode.Delete,flag = "menubindkeybind_toggle",callback = function(Value)
          library.keybind = Value
      end})
      
      uisettings:addToggle({text = "watermark",default = true,flag = "watermark_toggle",callback = function(Value)
          Text.Visible = Value
      end})
-     uisettings:addToggle({text = "animated title",default = false,flag = "animated_text",callback = function(Value)
+     uisettings:addToggle({text = "animated title",default = true,flag = "animated_text",callback = function(Value)
          library.AnimatedText = Value
      end})
      uisettings:addDivider()

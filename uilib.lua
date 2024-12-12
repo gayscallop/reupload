@@ -92,29 +92,25 @@
  task.spawn(function()
     local textList = {
         -- Original
-        '', 'a', 'an', 'ant', 'anti', 'anti.', 'anti.<font color="rgb(245, 66, 230)">s</font>',
-        'anti.<font color="rgb(245, 66, 230)">so</font> ', 'anti.<font color="rgb(245, 66, 230)">sol</font> ',
-        'anti.<font color="rgb(245, 66, 230)">solu</font> ', 'anti.<font color="rgb(245, 66, 230)">solut</font> ',
-        'anti.<font color="rgb(245, 66, 230)">soluti</font> ', 'anti.<font color="rgb(245, 66, 230)">solutio</font> ',
-        'anti.<font color="rgb(245, 66, 230)">solution</font> ', 'anti.<font color="rgb(245, 66, 230)">solutions</font> ',
-        'anti.<font color="rgb(245, 66, 230)">solutions</font> | ', 'anti.<font color="rgb(245, 66, 230)">solutions</font> | P ',
-        'anti.<font color="rgb(245, 66, 230)">solutions</font> | Pr ', 'anti.<font color="rgb(245, 66, 230)">solutions</font> | Pro ',
-        'anti.<font color="rgb(245, 66, 230)">solutions</font> | Proj ', 'anti.<font color="rgb(245, 66, 230)">solutions</font> | Proje ',
-        'anti.<font color="rgb(245, 66, 230)">solutions</font> | Projec ', 'anti.<font color="rgb(245, 66, 230)">solutions</font> | Project ',
-        'anti.<font color="rgb(245, 66, 230)">solutions</font> | Project D ', 'anti.<font color="rgb(245, 66, 230)">solutions</font> | Project De ',
-        'anti.<font color="rgb(245, 66, 230)">solutions</font> | Project Del ', 'anti.<font color="rgb(245, 66, 230)">solutions</font> | Project Delt ',
-        'anti.<font color="rgb(245, 66, 230)">solutions</font> | Project Delta ', 'anti.<font color="rgb(245, 66, 230)">solutions</font> | Project Delt ',
-        'anti.<font color="rgb(245, 66, 230)">solutions</font> | Project Del ', 'anti.<font color="rgb(245, 66, 230)">solutions</font> | Project De ',
-        'anti.<font color="rgb(245, 66, 230)">solutions</font> | Project De ', 'anti.<font color="rgb(245, 66, 230)">solutions</font> | Project D ',
-        'anti.<font color="rgb(245, 66, 230)">solutions</font> | Project ', 'anti.<font color="rgb(245, 66, 230)">solutions</font> | Projec ',
-        'anti.<font color="rgb(245, 66, 230)">solutions</font> | Proje  ', 'anti.<font color="rgb(245, 66, 230)">solutions</font> | Proj ',
-        'anti.<font color="rgb(245, 66, 230)">solutions</font> | Pro ', 'anti.<font color="rgb(245, 66, 230)">solutions</font> | Pr ',
-        'anti.<font color="rgb(245, 66, 230)">solutions</font> | P ', 'anti.<font color="rgb(245, 66, 230)">solutions</font> | ',
-        'anti.<font color="rgb(245, 66, 230)">solutions</font> ', 'anti.<font color="rgb(245, 66, 230)">solution</font> ',
-        'anti.<font color="rgb(245, 66, 230)">solutio</font>', 'anti.<font color="rgb(245, 66, 230)">soluti</font> ',
-        'anti.<font color="rgb(245, 66, 230)">solut</font> ', 'anti.<font color="rgb(245, 66, 230)">solu</font> ',
-        'anti.<font color="rgb(245, 66, 230)">sol</font> ', 'anti.<font color="rgb(245, 66, 230)">so</font> ',
-        'anti.<font color="rgb(245, 66, 230)">s</font> ', 'anti.', 'anti', 'ant', 'an', 'a'
+        '', 
+        'f', 
+        'fr', 
+        'fre', 
+        'frea', 
+        'freak', 
+        'freak<font color="rgb(245, 66, 230)">h</font>',
+        'freak<font color="rgb(245, 66, 230)">ha</font> ', 
+        'freak<font color="rgb(245, 66, 230)">hac</font> ',
+        'freak<font color="rgb(245, 66, 230)">hack</font> ',
+        'freak<font color="rgb(245, 66, 230)">hac</font> ',
+        'freak<font color="rgb(245, 66, 230)">ha</font>', 
+        'freak<font color="rgb(245, 66, 230)">h</font> ',
+        'freak', 
+        'frea', 
+        'fre', 
+        'fr', 
+        'f',
+        ''
     }
     while wait(0.2) do
         if library.AnimatedText then
@@ -123,7 +119,7 @@
                 wait(0.2)
             end 
         else
-            menu.bg.pre.Text = 'freak<font color="rgb(245, 66, 230)">hack</font> | <font color="rgb(245, 66, 230)">Project Delta</font>'
+            menu.bg.pre.Text = 'freak<font color="rgb(245, 66, 230)">hack</font>'
         end
     end
  end) 

@@ -1022,7 +1022,7 @@ end)
     visualtabgroup:addToggle({text = "Chams", flag = "chams_enabled", callback = function() esp.settings_chams.enabled = library.flags['chams_enabled'] end}):addColorpicker({text = 'Color', ontop = true, flag = "chams_color", color = Color3.new(1,1,1), callback = function() esp.settings_chams.fill_color = library.flags['chams_color'] end})
     visualtabgroup:addToggle({text = "Box", flag = "box_enabled", callback = function() esp.settings.box.enabled = library.flags['box_enabled'] end}):addColorpicker({text = 'Color', ontop = true, flag = "box_color", color = Color3.new(1,1,1), callback = function() esp.settings.box.color = library.flags['box_color'] end})
     visualtabgroup:addSlider({text = "Distance", min = 0, max = 10000, suffix = "m", float = 1, default = 5000, flag = "esp_distance",callback = function(Value)
-        esp.maxdist = Value
+        esp.maxdist = Value * 3.571
     end})
  end
  --// Bot ESP
@@ -1365,7 +1365,7 @@ end)
     visualtabgroup2:addToggle({text = "Extract", flag = "ext_enabled", callback = function() esp.customsettings.extract.enabled = library.flags['ext_enabled'] end}):addColorpicker({text = 'Color', ontop = true, flag = "ext_color", color = Color3.new(1,1,1), callback = function() esp.customsettings.extract.enabled = library.flags['ext_color'] end})
     visualtabgroup2:addToggle({text = "Extract Distance", flag = "extd_enabled", callback = function() esp.customsettings.extractdistance.enabled = library.flags['extd_enabled'] end}):addColorpicker({text = 'Color', ontop = true, flag = "extd_color", color = Color3.new(1,1,1), callback = function() esp.customsettings.extractdistance.enabled = library.flags['extd_color'] end})
     visualtabgroup2:addSlider({text = "Distance", min = 0, max = 10000, suffix = "m", float = 1, default = 5000, flag = "customesp_distance",callback = function(Value)
-        esp.customsettings.maxdist = library.flags['customesp_distance']
+        esp.customsettings.maxdist = Value * 3.571
     end})
  end
 

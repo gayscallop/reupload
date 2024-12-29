@@ -210,7 +210,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
                 if esp.settings.distance.enabled and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
                     v.distance.Position = Vector2new(BoxSize.X / 2 + BoxPos.X, BottomOffset)
                     v.distance.Outline = esp.settings.distance.outline
-                    v.distance.Text = "[" .. mathfloor((hrp.Position - plr.Character.HumanoidRootPart.Position).Magnitude / 3) .. "m]"
+                    v.distance.Text = mathfloor((hrp.Position - plr.Character.HumanoidRootPart.Position).Magnitude / 3) .. "m"
                     v.distance.Color = esp.settings.distance.color
                     BottomOffset = BottomOffset + 15
 

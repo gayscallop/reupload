@@ -82,10 +82,6 @@ function playerList.clear()
     end
 end
 
-function ternary ( cond , T , F )
-    if cond then return T else return F end
-end
-
 function addPlayer(player) 
     local vector, onScreen = camera:WorldToViewportPoint(player.Character.Head.Position)
     playerList.insert({

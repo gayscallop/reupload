@@ -23,22 +23,6 @@ local localplayer = game.Players.LocalPlayer
 -- games workspace
 local workspace = game:GetService("Workspace")
 
--- direct center
-local centerofscreen = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 2)
-
--- copy of ammos so we can restore
-local realAmmoTypes = game.ReplicatedStorage:FindFirstChild("realAmmoTypes") or game.ReplicatedStorage:FindFirstChild("AmmoTypes") and game.ReplicatedStorage:FindFirstChild("AmmoTypes"):Clone(); 
-if realAmmoTypes then 
-    realAmmoTypes.Name = "realAmmoTypes" 
-end
-
--- copy of player so we can restore
-local defaultFov = 0
-local localsettings = game.ReplicatedStorage.Players:FindFirstChild(localplayer.Name).Settings
-if localsettings then
-   defaultFov = localsettings.GameplaySettings:GetAttribute("DefaultFOV", defaultFov)  
-end
-
 local mouse = localplayer:GetMouse()
 local camera = workspace.CurrentCamera
 local worldToViewportPoint = camera.worldToViewportPoint
@@ -54,6 +38,22 @@ local Vector2new = Vector2.new
 local mathfloor = math.floor
 local mathceil = math.ceil
 local cross = Vector3new().Cross;
+
+-- direct center
+local centerofscreen = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 2)
+
+-- copy of ammos so we can restore
+local realAmmoTypes = game.ReplicatedStorage:FindFirstChild("realAmmoTypes") or game.ReplicatedStorage:FindFirstChild("AmmoTypes") and game.ReplicatedStorage:FindFirstChild("AmmoTypes"):Clone(); 
+if realAmmoTypes then 
+    realAmmoTypes.Name = "realAmmoTypes" 
+end
+
+-- copy of player so we can restore
+local defaultFov = 0
+local localsettings = game.ReplicatedStorage.Players:FindFirstChild(localplayer.Name).Settings
+if localsettings then
+   defaultFov = localsettings.GameplaySettings:GetAttribute("DefaultFOV", defaultFov)  
+end
 
 --[Setup Table]
 

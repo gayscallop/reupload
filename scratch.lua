@@ -13,6 +13,10 @@ local Window = Library:CreateWindow({
     MenuFadeTime = 0.2
 })
 
+esp.customsettings.enabled = true
+esp.customsettings.aichams = true
+esp.customsettings.extract.enabled = true
+
 -- player list basically
 local players = game:GetService("Players")
 

@@ -1054,7 +1054,6 @@ AimbotBox:AddToggle('fovcircle', {
 AimbotBox:AddLabel('FOV Color'):AddColorPicker('fovcolor', {
     Default = settings.fovcolor,
     Title = 'FOV',
-    Transparency = 0,
 
     Callback = function(Value)
         settings.fovcolor = Value
@@ -1638,6 +1637,7 @@ local MenuGroup = Tabs['UI Settings']:AddLeftGroupbox('Menu')
 
 -- I set NoUI so it does not show up in the keybinds menu
 MenuGroup:AddButton('Unload', function() Library:Unload() end)
+MenuGroup:AddButton('Rejoin', function() game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, game.JobId) end)
 MenuGroup:AddLabel('Menu bind'):AddKeyPicker('MenuKeybind', { Default = 'End', NoUI = true, Text = 'Menu keybind' })
 
 Library.ToggleKeybind = Options.MenuKeybind -- Allows you to have a custom keybind for the menu

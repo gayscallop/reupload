@@ -534,8 +534,11 @@ local function Skeletonesp(plr)
     end)
 end
 
-task.spawn(function()
-repeat wait() until game:GetService("Workspace"):FindFirstChild("AiZones") and workspace:FindFirstChild("DroppedItems")
+repeat
+    wait()
+ until game:GetService("Workspace"):FindFirstChild("AiZones") and
+    game:GetService("Workspace"):FindFirstChild("DroppedItems")
+
 
 --Bot Esp
 function AddBotEsp(Path)

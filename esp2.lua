@@ -732,22 +732,25 @@ workspace.DroppedItems.DescendantAdded:Connect(function(Child)
 end)
 
 --Extract Esp
-function AddExtractEsp(Extract)
+ function AddExtractEsp(Extract)
     local ExtractEsp = Drawing.new("Text")
     ExtractEsp.Visible = false
     ExtractEsp.Center = true
     ExtractEsp.Outline = true
-    ExtractEsp.Font = 10
+    ExtractEsp.Font = 3
     ExtractEsp.Size = 10
     local ExtractEsp2 = Drawing.new("Text")
     ExtractEsp2.Visible = false
     ExtractEsp2.Center = true
     ExtractEsp2.Outline = true
-    ExtractEsp2.Font = 10
+    ExtractEsp2.Font = 3
     ExtractEsp2.Size = 10
     local renderstepped
-    renderstepped = game:GetService("RunService").RenderStepped:Connect(function()
-        if
+    renderstepped =
+        game:GetService("RunService").RenderStepped:Connect(
+        function()
+            if Extract then
+                if
                     esp.customsettings.enabled and esp.customsettings.extract.enabled and
                         (esp.customsettings.maxdist == 0 or
                             (Extract.Position - localplayer.Character.HumanoidRootPart.Position).Magnitude <
@@ -761,36 +764,45 @@ function AddExtractEsp(Extract)
                     ExtractEsp2.Size = esp.customsettings.extract.size
                     local Extract_pos, Extract_onscreen =
                         game:GetService("Workspace").CurrentCamera:WorldToViewportPoint(Extract.Position)
-                if Extract_onscreen then
-                    ExtractEsp.Position = Vector2.new(Extract_pos.X, Extract_pos.Y)
-                    ExtractEsp2.Position = Vector2.new(Extract_pos.X, Extract_pos.Y + esp.customsettings.extract.size)
-                    ExtractEsp.Text = "Extract"
-                    if esp.customsettings.extractdistance.enabled then
-                        if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                            ExtractEsp2.Text = math.round((Extract.Position-game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude / 3) .. "m"
-                            ExtractEsp2.Visible = true
+                    if Extract_onscreen then
+                        ExtractEsp.Position = Vector2.new(Extract_pos.X, Extract_pos.Y)
+                        ExtractEsp2.Position =
+                            Vector2.new(Extract_pos.X, Extract_pos.Y + esp.customsettings.extract.size)
+                        ExtractEsp.Text = "exit"
+                        if esp.customsettings.extractdistance.enabled then
+                            if
+                                game.Players.LocalPlayer.Character and
+                                    game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                             then
+                                ExtractEsp2.Text =
+                                    math.round(
+                                    (Extract.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude /
+                                        3
+                                ) .. "m"
+                                ExtractEsp2.Visible = true
+                            else
+                                ExtractEsp2.Visible = false
+                            end
                         else
-                            ExtractEsp2.Visible = false
+                            esp.customsettings.extractdistance.enabled = false
                         end
+                        ExtractEsp.Visible = true
                     else
-                        esp.customsettings.extractdistance.enabled = false
+                        ExtractEsp.Visible = false
+                        ExtractEsp2.Visible = false
                     end
-                    ExtractEsp.Visible = true
-                else 
+                else
                     ExtractEsp.Visible = false
                     ExtractEsp2.Visible = false
                 end
             else
-                ExtractEsp.Visible = false
-                ExtractEsp2.Visible = false
+                ExtractEsp:Remove()
+                ExtractEsp2:Remove()
+                renderstepped:Disconnect()
             end
-        else
-            ExtractEsp:Remove()
-            ExtractEsp2:Remove()
-            renderstepped:Disconnect()
         end
-    end)
-end
+    )
+ end
 if workspace.NoCollision:FindFirstChild("ExitLocations") then
     for _,v in next, workspace.NoCollision.ExitLocations:GetChildren() do 
         AddExtractEsp(v)

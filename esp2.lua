@@ -747,15 +747,20 @@ function AddExtractEsp(Extract)
     ExtractEsp2.Size = 10
     local renderstepped
     renderstepped = game:GetService("RunService").RenderStepped:Connect(function()
-        if Extract then
-            if esp.customsettings.enabled and esp.customsettings.extract.enabled and (esp.customsettings.maxdist == 0 or (Extract.Position - plr.Character.HumanoidRootPart.Position).Magnitude < esp.customsettings.maxdist) then
-                ExtractEsp.Color = esp.customsettings.extract.color
-                ExtractEsp2.Color = esp.customsettings.extractdistance.color
-                ExtractEsp.Outline = esp.customsettings.extract.outline
-                ExtractEsp2.Outline = esp.customsettings.extract.outline
-                ExtractEsp.Size = esp.customsettings.extract.size
-                ExtractEsp2.Size = esp.customsettings.extract.size
-                local Extract_pos, Extract_onscreen = game:GetService("Workspace").CurrentCamera:WorldToViewportPoint(Extract.Position)
+        if
+                    esp.customsettings.enabled and esp.customsettings.extract.enabled and
+                        (esp.customsettings.maxdist == 0 or
+                            (Extract.Position - localplayer.Character.HumanoidRootPart.Position).Magnitude <
+                                esp.customsettings.maxdist)
+                 then
+                    ExtractEsp.Color = esp.customsettings.extract.color
+                    ExtractEsp2.Color = esp.customsettings.extractdistance.color
+                    ExtractEsp.Outline = esp.customsettings.extract.outline
+                    ExtractEsp2.Outline = esp.customsettings.extract.outline
+                    ExtractEsp.Size = esp.customsettings.extract.size
+                    ExtractEsp2.Size = esp.customsettings.extract.size
+                    local Extract_pos, Extract_onscreen =
+                        game:GetService("Workspace").CurrentCamera:WorldToViewportPoint(Extract.Position)
                 if Extract_onscreen then
                     ExtractEsp.Position = Vector2.new(Extract_pos.X, Extract_pos.Y)
                     ExtractEsp2.Position = Vector2.new(Extract_pos.X, Extract_pos.Y + esp.customsettings.extract.size)

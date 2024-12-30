@@ -1643,6 +1643,15 @@ MenuGroup:AddLabel('Menu bind'):AddKeyPicker('MenuKeybind', { Default = 'End', N
 
 Library.ToggleKeybind = Options.MenuKeybind -- Allows you to have a custom keybind for the menu
 
+MenuGroup:AddToggle('keybindlist', {
+    Text = 'Keybinds',
+    Default = watermark,
+
+    Callback = function(Value)
+        watermark = Value
+    end
+})
+
 -- Addons:
 -- SaveManager (Allows you to have a configuration system)
 -- ThemeManager (Allows you to have a menu theme system)

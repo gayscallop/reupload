@@ -12,11 +12,36 @@ local Window = Library:CreateWindow({
     MenuFadeTime = 0.2
 })
 
-local plrs = game["Players"]
 local rs = game:GetService("RunService")
 
-local plr = plrs.LocalPlayer
-local mouse = plr:GetMouse()
+-- player list basically
+local players = game:GetService("Players")
+
+-- localplayer
+local localplayer = game.Players.LocalPlayer
+
+-- games workspace
+local workspace = game:GetService("Workspace")
+
+-- direct center
+local centerofscreen = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 2)
+
+-- copy of ammos so we can restore
+local realAmmoTypes = game.ReplicatedStorage:FindFirstChild("realAmmoTypes") or game.ReplicatedStorage:FindFirstChild("AmmoTypes") and game.ReplicatedStorage:FindFirstChild("AmmoTypes"):Clone(); 
+if realAmmoTypes then 
+    realAmmoTypes.Name = "realAmmoTypes" 
+end
+
+-- copy of player so we can restore
+local defaultFov = 0
+local localplayer = game.ReplicatedStorage.Players:FindFirstChild(localplayer.Name)
+for i,v in localplayer:GetDescendants() do
+    if v:FindFirstChild("GameplaySettings") then
+        defaultFov = v.GameplaySettings:GetAttribute("DefaultFOV")
+    end
+end
+
+local mouse = localplayer:GetMouse()
 local camera = workspace.CurrentCamera
 local worldToViewportPoint = camera.worldToViewportPoint
 local emptyCFrame = CFrame.new();
@@ -104,7 +129,7 @@ end
 
 esp.WallCheck = function(v)
     local ray = Ray.new(camera.CFrame.p, (v.Position - camera.CFrame.p).Unit * 300)
-    local part, position = game:GetService("Workspace"):FindPartOnRayWithIgnoreList(ray, {plr.Character, camera}, false, true)
+    local part, position = game:GetService("Workspace"):FindPartOnRayWithIgnoreList(ray, {localplayer.Character, camera}, false, true)
     if part then
         local hum = part.Parent:FindFirstChildOfClass("Humanoid")
         if not hum then
@@ -120,7 +145,7 @@ esp.WallCheck = function(v)
 end
 
 esp.TeamCheck = function(v)
-    if plr.TeamColor == v.TeamColor then
+    if localplayer.TeamColor == v.TeamColor then
         return false
     end
 
@@ -147,7 +172,7 @@ end
 
 game:GetService("RunService").RenderStepped:Connect(function()
     for i,v in pairs(esp.players) do
-        if i.Character and i.Character:FindFirstChild("Humanoid") and i.Character:FindFirstChild("HumanoidRootPart") and i.Character:FindFirstChild("Head") and i.Character:FindFirstChild("Humanoid").Health > 0 and (esp.maxdist == 0 or (i.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude < esp.maxdist) then
+        if i.Character and i.Character:FindFirstChild("Humanoid") and i.Character:FindFirstChild("HumanoidRootPart") and i.Character:FindFirstChild("Head") and i.Character:FindFirstChild("Humanoid").Health > 0 and (esp.maxdist == 0 or (i.Character.HumanoidRootPart.Position - localplayer.Character.HumanoidRootPart.Position).Magnitude < esp.maxdist) then
             local hum = i.Character.Humanoid
             local hrp = i.Character.HumanoidRootPart
             local head = i.Character.Head
@@ -220,10 +245,10 @@ game:GetService("RunService").RenderStepped:Connect(function()
                     v.name.Visible = false
                 end
 
-                if esp.settings.distance.enabled and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                if esp.settings.distance.enabled and localplayer.Character and localplayer.Character:FindFirstChild("HumanoidRootPart") then
                     v.distance.Position = Vector2new(BoxSize.X / 2 + BoxPos.X, BottomOffset)
                     v.distance.Outline = esp.settings.distance.outline
-                    v.distance.Text = "[" .. mathfloor((hrp.Position - plr.Character.HumanoidRootPart.Position).Magnitude / 3) .. "m]"
+                    v.distance.Text = "[" .. mathfloor((hrp.Position - localplayer.Character.HumanoidRootPart.Position).Magnitude / 3) .. "m]"
                     v.distance.Color = esp.settings.distance.color
                     BottomOffset = BottomOffset + 15
 
@@ -404,11 +429,11 @@ local function DrawLine()
     return l
 end
 
-local function Skeletonesp(plr)
+local function Skeletonesp(localplayer)
     task.spawn(function()
-        repeat wait() until plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil
+        repeat wait() until localplayer.Character ~= nil and localplayer.Character:FindFirstChild("Humanoid") ~= nil
         local limbs = {}
-        local R15 = (plr.Character.Humanoid.RigType == Enum.HumanoidRigType.R15) and true or false
+        local R15 = (localplayer.Character.Humanoid.RigType == Enum.HumanoidRigType.R15) and true or false
         limbs = {
             -- Spine
             Head_UpperTorso = DrawLine(),
@@ -445,31 +470,31 @@ local function Skeletonesp(plr)
         local function UpdaterR15()
             local connection
             connection = game:GetService("RunService").RenderStepped:Connect(function()
-                if plr.Character ~= nil and plr.Character:FindFirstChild("Humanoid") ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") ~= nil and plr.Character.Humanoid.Health > 0 then
-                    local HUM, vis = camera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
+                if localplayer.Character ~= nil and localplayer.Character:FindFirstChild("Humanoid") ~= nil and localplayer.Character:FindFirstChild("HumanoidRootPart") ~= nil and localplayer.Character.Humanoid.Health > 0 then
+                    local HUM, vis = camera:WorldToViewportPoint(localplayer.Character.HumanoidRootPart.Position)
                     if vis and esp.settings.skeleton.enabled and esp.enabled then
                         -- Head
-                        local H = camera:WorldToViewportPoint(plr.Character.Head.Position)
+                        local H = camera:WorldToViewportPoint(localplayer.Character.Head.Position)
                         if limbs.Head_UpperTorso.From ~= Vector2.new(H.X, H.Y) then
                             --Spine
-                            local UT = camera:WorldToViewportPoint(plr.Character.UpperTorso.Position)
-                            local LT = camera:WorldToViewportPoint(plr.Character.LowerTorso.Position)
+                            local UT = camera:WorldToViewportPoint(localplayer.Character.UpperTorso.Position)
+                            local LT = camera:WorldToViewportPoint(localplayer.Character.LowerTorso.Position)
                             -- Left Arm
-                            local LUA = camera:WorldToViewportPoint(plr.Character.LeftUpperArm.Position)
-                            local LLA = camera:WorldToViewportPoint(plr.Character.LeftLowerArm.Position)
-                            local LH = camera:WorldToViewportPoint(plr.Character.LeftHand.Position)
+                            local LUA = camera:WorldToViewportPoint(localplayer.Character.LeftUpperArm.Position)
+                            local LLA = camera:WorldToViewportPoint(localplayer.Character.LeftLowerArm.Position)
+                            local LH = camera:WorldToViewportPoint(localplayer.Character.LeftHand.Position)
                             -- Right Arm
-                            local RUA = camera:WorldToViewportPoint(plr.Character.RightUpperArm.Position)
-                            local RLA = camera:WorldToViewportPoint(plr.Character.RightLowerArm.Position)
-                            local RH = camera:WorldToViewportPoint(plr.Character.RightHand.Position)
+                            local RUA = camera:WorldToViewportPoint(localplayer.Character.RightUpperArm.Position)
+                            local RLA = camera:WorldToViewportPoint(localplayer.Character.RightLowerArm.Position)
+                            local RH = camera:WorldToViewportPoint(localplayer.Character.RightHand.Position)
                             -- Left leg
-                            local LUL = camera:WorldToViewportPoint(plr.Character.LeftUpperLeg.Position)
-                            local LLL = camera:WorldToViewportPoint(plr.Character.LeftLowerLeg.Position)
-                            local LF = camera:WorldToViewportPoint(plr.Character.LeftFoot.Position)
+                            local LUL = camera:WorldToViewportPoint(localplayer.Character.LeftUpperLeg.Position)
+                            local LLL = camera:WorldToViewportPoint(localplayer.Character.LeftLowerLeg.Position)
+                            local LF = camera:WorldToViewportPoint(localplayer.Character.LeftFoot.Position)
                             -- Right leg
-                            local RUL = camera:WorldToViewportPoint(plr.Character.RightUpperLeg.Position)
-                            local RLL = camera:WorldToViewportPoint(plr.Character.RightLowerLeg.Position)
-                            local RF = camera:WorldToViewportPoint(plr.Character.RightFoot.Position)
+                            local RUL = camera:WorldToViewportPoint(localplayer.Character.RightUpperLeg.Position)
+                            local RLL = camera:WorldToViewportPoint(localplayer.Character.RightLowerLeg.Position)
+                            local RF = camera:WorldToViewportPoint(localplayer.Character.RightFoot.Position)
 
                             --Head
                             limbs.Head_UpperTorso.From = Vector2.new(H.X, H.Y)
@@ -534,7 +559,7 @@ local function Skeletonesp(plr)
                     if limbs.Head_UpperTorso.Visible ~= false then
                         Visibility(false)
                     end
-                    if game.Players:FindFirstChild(plr.Name) == nil then 
+                    if game.Players:FindFirstChild(localplayer.Name) == nil then 
                         for i, v in pairs(limbs) do
                             v:Remove()
                         end
@@ -843,19 +868,19 @@ end
 
 end)
 
-for _,v in ipairs(plrs:GetPlayers()) do
-    if v ~= plr then
+for _,v in ipairs(players:GetPlayers()) do
+    if v ~= localplayer then
         esp.NewPlayer(v)
         Skeletonesp(v)
     end
 end
 
-plrs.ChildAdded:Connect(function(v)
+players.ChildAdded:Connect(function(v)
     esp.NewPlayer(v)
     Skeletonesp(v)
 end)
 
-plrs.PlayerRemoving:Connect(function(v)
+players.PlayerRemoving:Connect(function(v)
     for i2,v2 in pairs(esp.players[v]) do
         pcall(function()
             v2:Remove()
@@ -867,37 +892,6 @@ plrs.PlayerRemoving:Connect(function(v)
 end)
 
 getgenv().esp = esp
-
--- player list basically
-local players = game:GetService("Players")
-
--- localplayer
-local localplayer = game.Players.LocalPlayer
-local mouse = game.Players.LocalPlayer:GetMouse()
-
--- games workspace
-local workspace = game:GetService("Workspace")
-
--- our camera
-local camera = workspace.CurrentCamera
-
--- direct center
-local centerofscreen = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 2)
-
--- copy of ammos so we can restore
-local realAmmoTypes = game.ReplicatedStorage:FindFirstChild("realAmmoTypes") or game.ReplicatedStorage:FindFirstChild("AmmoTypes") and game.ReplicatedStorage:FindFirstChild("AmmoTypes"):Clone(); 
-if realAmmoTypes then 
-    realAmmoTypes.Name = "realAmmoTypes" 
-end
-
--- copy of player so we can restore
-local defaultFov = 0
-local plr = game.ReplicatedStorage.Players:FindFirstChild(localplayer.Name)
-for i,v in plr:GetDescendants() do
-    if v:FindFirstChild("GameplaySettings") then
-        defaultFov = v.GameplaySettings:GetAttribute("DefaultFOV")
-    end
-end
 
 -- our local default settings
 local settings = {

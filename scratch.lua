@@ -34,11 +34,9 @@ end
 
 -- copy of player so we can restore
 local defaultFov = 0
-local localplayer = game.ReplicatedStorage.Players:FindFirstChild(localplayer.Name)
-for i,v in localplayer:GetDescendants() do
-    if v:FindFirstChild("GameplaySettings") then
-        defaultFov = v.GameplaySettings:GetAttribute("DefaultFOV")
-    end
+local localsettings = game.ReplicatedStorage.Players:FindFirstChild(localplayer.Name).Settings
+if localsettings then
+   defaultFov = localsettings.GameplaySettings:GetAttribute("DefaultFOV", defaultFov)  
 end
 
 local mouse = localplayer:GetMouse()

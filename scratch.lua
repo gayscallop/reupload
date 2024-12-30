@@ -1594,9 +1594,6 @@ local WatermarkConnection = game:GetService('RunService').RenderStepped:Connect(
     end
 end);
 
--- keybinds
-Library.KeybindFrame.Visible = true; -- todo: add a function for this
-
 -- unload func, sometimes breaks lmao
 Library:OnUnload(function()
     WatermarkConnection:Disconnect()
@@ -1637,7 +1634,7 @@ local MenuGroup = Tabs['UI Settings']:AddLeftGroupbox('Menu')
 
 -- I set NoUI so it does not show up in the keybinds menu
 MenuGroup:AddButton('Dex Explorer', function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/dex.lua"))() end)
-MenuGroup:AddButton('Unload', function() Library:Unload() end)
+MenuGroup:AddButton('Unload Menu', function() Library:Unload() end)
 MenuGroup:AddButton('Rejoin', function() game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, game.JobId) end)
 MenuGroup:AddLabel('Menu bind'):AddKeyPicker('MenuKeybind', { Default = 'End', NoUI = true, Text = 'Menu keybind' })
 
@@ -1645,10 +1642,10 @@ Library.ToggleKeybind = Options.MenuKeybind -- Allows you to have a custom keybi
 
 MenuGroup:AddToggle('keybindlist', {
     Text = 'Keybinds',
-    Default = watermark,
+    Default = Library.KeybindFrame.Visible,
 
     Callback = function(Value)
-        watermark = Value
+        Library.KeybindFrame.Visible = Value
     end
 })
 

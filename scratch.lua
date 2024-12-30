@@ -20,7 +20,6 @@ local players = game:GetService("Players")
 local localplayer = game.Players.LocalPlayer
 local mouse = game.Players.LocalPlayer:GetMouse()
 
-
 -- games workspace
 local workspace = game:GetService("Workspace")
 
@@ -36,21 +35,35 @@ if realAmmoTypes then
     realAmmoTypes.Name = "realAmmoTypes" 
 end
 
+-- copy of player so we can restore
+local defaultFov = 0
+local plr = game.ReplicatedStorage.Players:FindFirstChild(localplayer.Name)
+for i,v in plr:GetDescendants() do
+    if v:FindFirstChild("GameplaySettings") then
+        defaultFov = v.GameplaySettings:GetAttribute("DefaultFOV")
+    end
+end
+
 -- our local default settings
 local settings = {
     activetarget = nil,
     aimbot = true,
-    aimdistance = 50,
+    vischeck = false,
+    aimdistance = 150,
     aimBindHeld = false,
 
     fovcircle = false,
     fovcolor = Color3.fromRGB(255, 255, 255),
     fovradius = 20,
+    dynamicfov = true,
 
     recoilslider = 100,
     dropslider = 100,
     spreadslider = 100,
-    bulletspeed = 100
+    bulletspeed = 100,
+
+    zoomBindHeld = false,
+    zoomFov = 40,
 }
 
 -- create our center circle, we update later
@@ -121,6 +134,7 @@ end
 local Tabs = {
     Main = Window:AddTab('Main'),
     Visuals = Window:AddTab('Visuals'),
+    Misc = Window:AddTab('Misc'),
 
     ['UI Settings'] = Window:AddTab('UI Settings'),
 }
@@ -129,6 +143,8 @@ local AimbotBox = Tabs.Main:AddLeftGroupbox('Aimbot')
 local GunModBox = Tabs.Main:AddRightGroupbox('Gun Mods')
 
 local ESPBox = Tabs.Visuals:AddLeftGroupbox('ESP')
+
+local MiscBox = Tabs.Misc:AddLeftGroupbox('Misc')
 
 -- left side (aimbot related)
 
@@ -141,7 +157,16 @@ AimbotBox:AddToggle('memoryaimbot', {
     end
 })
 
-AimbotBox:AddLabel('Aimbot Bind'):AddKeyPicker('KeyPicker', {
+AimbotBox:AddToggle('vischeck', {
+    Text = 'Visible Check',
+    Default = settings.vischeck,
+
+    Callback = function(Value)
+        settings.vischeck = Value
+    end
+})
+
+AimbotBox:AddLabel('Aimbot Bind'):AddKeyPicker('aimbind', {
     Default = 'MB2',
     SyncToggleState = false,
     Mode = 'Hold',
@@ -158,7 +183,7 @@ AimbotBox:AddSlider('aimdistance', {
     Text = 'Max Distance',
     Default = settings.aimdistance,
     Min = 0,
-    Max = 300,
+    Max = 1000,
     Rounding = 1,
     Compact = false,
 
@@ -196,6 +221,15 @@ AimbotBox:AddSlider('fovradius', {
 
     Callback = function(Value)
         settings.fovradius = Value
+    end
+})
+
+AimbotBox:AddToggle('dynamicfov', {
+    Text = 'Dynamic FOV',
+    Default = settings.dynamicfov,
+
+    Callback = function(Value)
+        settings.dynamicfov = Value
     end
 })
 
@@ -237,9 +271,15 @@ GunModBox:AddSlider('dropslider', {
             local realAmmo = realAmmoTypes:FindFirstChild(v.Name)
             if realAmmo then
                 local percentage = Value/100
+                -- drop
                 if v:GetAttribute("ProjectileDrop") then
-                    local recoilamt = realAmmo:GetAttribute("ProjectileDrop") * percentage
-                    v:SetAttribute("ProjectileDrop", recoilamt)
+                    local dropamt = realAmmo:GetAttribute("ProjectileDrop") * percentage
+                    v:SetAttribute("ProjectileDrop", dropamt)
+                end
+                -- drag, kinda like dropping but going random direc idfk
+                if v:GetAttribute("Drag") then
+                    local dragamt = realAmmo:GetAttribute("Drag") * percentage
+                    v:SetAttribute("Drag", dragamt)
                 end
             end
         end
@@ -401,7 +441,51 @@ ESPBox:AddLabel('Cham Invis color'):AddColorPicker('chaminviscolor', {
     end
 })
 
+MiscBox:AddLabel('Zoom Bind'):AddKeyPicker('zoombind', {
+    Default = 'Comma',
+    SyncToggleState = false,
+    Mode = 'Hold',
+
+    Text = 'Zoom',
+    NoUI = false,
+
+    Callback = function(Value)
+        
+    end
+})
+
+MiscBox:AddSlider('zoomvalue', {
+    Text = 'Zoom FOV',
+    Default = settings.zoomFov,
+    Min = 0,
+    Max = 100,
+    Rounding = 1,
+    Compact = false,
+
+    Callback = function(Value)
+        settings.zoomFov = Value
+    end
+})
+
+MiscBox:AddSlider('defaultfov', {
+    Text = 'Default FOV',
+    Default = defaultFov,
+    Min = 0,
+    Max = 120,
+    Rounding = 1,
+    Compact = false,
+
+    Callback = function(Value)
+        defaultFov = Value
+    end
+})
+
 -- OUR LOOP  YIPPEE
+
+function round(x)
+  return x>=0 and math.floor(x+0.5) or math.ceil(x-0.5)
+end
+
 
 task.spawn(function()
     while true do
@@ -411,17 +495,41 @@ task.spawn(function()
         -- update cirlce
         circle.Visible = settings.fovcircle
         circle.Color = settings.fovcolor
-        circle.Radius = settings.fovradius
+
+        local rad = settings.fovradius
+        if settings.zoomBindHeld and settings.dynamicfov then
+            rad = rad * round(defaultFov/settings.zoomFov)
+        end
+        circle.Radius = rad
 
         -- check bind and update 
-        local aimBind = Options.KeyPicker:GetState()
+        local aimBind = Options.aimbind:GetState()
         settings.aimBindHeld = aimBind
+
+        local zoomBind = Options.zoombind:GetState()
+        settings.zoomBindHeld = zoomBind
     
         -- update players list
         updatePlayers()
 
         -- get our players list in here
         local players = playerList.get()
+
+        if settings.zoomBindHeld then
+            local plr = game.ReplicatedStorage.Players:FindFirstChild(localplayer.Name)
+            for i,v in plr:GetDescendants() do
+                if v:FindFirstChild("GameplaySettings") then
+                    v.GameplaySettings:SetAttribute("DefaultFOV", settings.zoomFov)
+                end
+            end
+        else
+            local plr = game.ReplicatedStorage.Players:FindFirstChild(localplayer.Name)
+            for i,v in plr:GetDescendants() do
+                if v:FindFirstChild("GameplaySettings") then
+                    v.GameplaySettings:SetAttribute("DefaultFOV", defaultFov)
+                end
+            end
+        end
 
         -- memory aimbot, its just here cuz idc and has to run a lot
         -- all done if enabled but not aiming until bind held so we can calc and not calc the second the button gets held, less tweaky
@@ -430,7 +538,7 @@ task.spawn(function()
             for i = 1, #players do
                 if players[i] then
                     if players[i].Distance <= settings.aimdistance then
-                        if players[i].isOnScreen and ((Vector2.new(players[i].HeadPoint.X, players[i].HeadPoint.Y) - camera.ViewportSize/2).Magnitude) <= settings.fovradius then
+                        if players[i].isOnScreen and ((Vector2.new(players[i].HeadPoint.X, players[i].HeadPoint.Y) - camera.ViewportSize/2).Magnitude) <= circle.Radius then
                             table.insert(possibletargets, players[i])
                             local lowest = possibletargets[1].Distance
                             if GetTableLng(possibletargets) > 1 then
@@ -444,8 +552,11 @@ task.spawn(function()
                             else
                                 settings.activetarget = players[i]
                             end
-                            if settings.activetarget and settings.aimBindHeld and esp.WallCheck(settings.activetarget.Head) and not(settings.activetarget.isTeam) then
-                                workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, settings.activetarget.HeadPosition)
+                            
+                            if settings.activetarget and settings.aimBindHeld and not(settings.activetarget.isTeam) then
+                                if (settings.vischeck and esp.WallCheck(settings.activetarget.Head)) or not(settings.vischeck) then
+                                    workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, settings.activetarget.HeadPosition)
+                                end
                             end
                         else
                             settings.activetarget = nil
@@ -513,6 +624,9 @@ Library:OnUnload(function()
             end
             if v:GetAttribute("ProjectileDrop") then
                 v:SetAttribute("ProjectileDrop", realAmmo:GetAttribute("ProjectileDrop"))
+            end
+            if v:GetAttribute("Drag") then
+                v:SetAttribute("Drag", realAmmo:GetAttribute("Drag"))
             end
         end
     end

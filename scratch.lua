@@ -1262,8 +1262,8 @@ ESPBox:AddToggle('espchams', {
     end
 })
 
-ESPBox:AddToggle('chamoccluded', {
-    Text = 'Occluded chams',
+ESPBox:AddToggle('occludedchams', {
+    Text = 'Occluded Chams',
     Default = esp.settings_chams.occluded,
 
     Callback = function(Value)

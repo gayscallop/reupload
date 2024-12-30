@@ -14,6 +14,8 @@ local Window = Library:CreateWindow({
 })
 
 esp.customsettings.enabled = true
+esp.customsettings.maxdist = 1000
+esp.customsettings.ai.enabled = true
 esp.customsettings.aichams = true
 esp.customsettings.extract.enabled = true
 

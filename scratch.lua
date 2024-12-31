@@ -631,10 +631,9 @@ end)
     end)
  end
 if workspace.NoCollision:FindFirstChild("ExitLocations") then
-    workspace.NoCollision.ExitLocations.DescendantAdded:Connect(function(Child)
-        wait(1)
-        AddExtractEsp(Child)
-    end)
+    for _,v in next, workspace.NoCollision.ExitLocations:GetChildren() do 
+	    AddExtractEsp(v)
+    end
 end
 
 end)
@@ -731,7 +730,7 @@ end
 function updatePlayers()
     if not(Library.Unloaded) then
         for _, player in ipairs(players:GetPlayers()) do
-            if player ~= localplayer and player.Character and player.Character:FindFirstChild("Head") then
+            if localplayer and player ~= localplayer and player.Character and player.Character:FindFirstChild("Head") then
                 addPlayer(player)
             end
         end
@@ -1301,7 +1300,7 @@ task.spawn(function()
         local players = playerList.get()
 
         local localsettings = game.ReplicatedStorage.Players:FindFirstChild(localplayer.Name).Settings
-        if localsettings then
+        if localsettings and localplayer then
             if settings.zoomBindHeld then
                 localsettings.GameplaySettings:SetAttribute("DefaultFOV", settings.zoomFov)
             else

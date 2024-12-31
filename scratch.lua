@@ -631,10 +631,6 @@ end)
     end)
  end
 if workspace.NoCollision:FindFirstChild("ExitLocations") then
-    for _,v in next, workspace.NoCollision.ExitLocations:GetChildren() do 
-	AddExtractEsp(v)
-    end
-
     workspace.NoCollision.ExitLocations.DescendantAdded:Connect(function(Child)
         wait(1)
         AddExtractEsp(Child)

@@ -735,7 +735,7 @@ end
 function updatePlayers()
     if not(Library.Unloaded) then
         for _, player in ipairs(players:GetPlayers()) do
-            if player ~= game:GetService("Players").LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+            if player ~= localplayer and player.Character and player.Character:FindFirstChild("Head") then
                 addPlayer(player)
             end
         end

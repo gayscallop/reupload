@@ -36,7 +36,7 @@ local mathfloor = math.floor
 local cross = Vector3new().Cross;
 
 -- direct center
-local centerofscreen = Vector2new(workspace.Camera.ViewportSize.X / 2, workspace.Camera.ViewportSize.Y / 2)
+local centerofscreen = Vector2new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 2)
 
 -- copy of ammos so we can restore
 local realAmmoTypes = game.ReplicatedStorage:FindFirstChild("realAmmoTypes") or game.ReplicatedStorage:FindFirstChild("AmmoTypes") and game.ReplicatedStorage:FindFirstChild("AmmoTypes"):Clone(); 

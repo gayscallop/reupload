@@ -12,8 +12,6 @@ local Window = Library:CreateWindow({
     MenuFadeTime = 0.2
 })
 
-local rs = game:GetService("RunService")
-
 -- player list basically
 local players = game:GetService("Players")
 
@@ -23,9 +21,8 @@ local localplayer = game.Players.LocalPlayer
 -- games workspace
 local workspace = game:GetService("Workspace")
 
-local mouse = localplayer:GetMouse()
 local camera = workspace.CurrentCamera
-local worldToViewportPoint = camera.worldToViewportPoint
+
 local emptyCFrame = CFrame.new();
 local pointToObjectSpace = emptyCFrame.PointToObjectSpace
 
@@ -36,11 +33,10 @@ local Color3fromRGB = Color3.fromRGB
 local Vector3new = Vector3.new
 local Vector2new = Vector2.new
 local mathfloor = math.floor
-local mathceil = math.ceil
 local cross = Vector3new().Cross;
 
 -- direct center
-local centerofscreen = Vector2.new(workspace.Camera.ViewportSize.X / 2, workspace.Camera.ViewportSize.Y / 2)
+local centerofscreen = Vector2new(workspace.Camera.ViewportSize.X / 2, workspace.Camera.ViewportSize.Y / 2)
 
 -- copy of ammos so we can restore
 local realAmmoTypes = game.ReplicatedStorage:FindFirstChild("realAmmoTypes") or game.ReplicatedStorage:FindFirstChild("AmmoTypes") and game.ReplicatedStorage:FindFirstChild("AmmoTypes"):Clone(); 
@@ -67,14 +63,10 @@ local esp = {
     maxdist = 0,
     settings = {
         name = {enabled = false, outline = true, displaynames = false, color = Color3fromRGB(255, 255, 255)},
-        box = {enabled = false, outline = true, color = Color3fromRGB(255, 255, 255)},
-        filledbox = {enabled = false, outline = true, transparency = 0.5, color = Color3fromRGB(255, 255, 255)},
         healthbar = {enabled = false, size = 3, outline = true},
         healthtext = {enabled = false, outline = true, color = Color3fromRGB(255, 255, 255)},
         distance = {enabled = false, outline = true, color = Color3fromRGB(255, 255, 255)},
         viewangle = {enabled = false, size = 6, color = Color3fromRGB(255, 255, 255)},
-        skeleton = {enabled = false, color = Color3fromRGB(255, 255, 255)},
-        tracer = {enabled = false, origin = "Middle", color = Color3fromRGB(255, 255, 255)},
         arrow = {enabled = false, radius = 100, size = 25, filled = false, transparency = 1, color = Color3fromRGB(255, 255, 255)}
     },
     settings_chams = {
@@ -153,22 +145,18 @@ end
 esp.NewPlayer = function(v)
     esp.players[v] = {
         name = esp.NewDrawing("Text", {Color = Color3fromRGB(255, 255, 255), Outline = true, Center = true, Size = 13, Font = 10}),
-        filledbox = esp.NewDrawing("Square", {Color = Color3fromRGB(255, 255, 255), Thickness = 1, Filled = true}),
-        boxOutline = esp.NewDrawing("Square", {Color = Color3fromRGB(0, 0, 0), Thickness = 3}),
-        box = esp.NewDrawing("Square", {Color = Color3fromRGB(255, 255, 255), Thickness = 1}),
         healthBarOutline = esp.NewDrawing("Line", {Color = Color3fromRGB(0, 0, 0), Thickness = 3}),
         healthBar = esp.NewDrawing("Line", {Color = Color3fromRGB(255, 255, 255), Thickness = 1}),
         healthText = esp.NewDrawing("Text", {Color = Color3fromRGB(255, 255, 255), Outline = true, Center = true, Size = 13, Font = 10}),
         distance = esp.NewDrawing("Text", {Color = Color3fromRGB(255, 255, 255), Outline = true, Center = true, Size = 13, Font = 10}),
         viewAngle = esp.NewDrawing("Line", {Color = Color3fromRGB(255, 255, 255), Thickness = 1}),
         weapon = esp.NewDrawing("Text", {Color = Color3fromRGB(255, 255, 255), Outline = true, Center = true, Size = 13, Font = 10}),
-        tracer = esp.NewDrawing("Line", {Color = Color3fromRGB(255, 255, 255), Thickness = 1}),
         cham = esp.NewCham({FillColor = esp.settings_chams.fill_color, OutlineColor = esp.settings_chams.outline_color, FillTransparency = esp.settings_chams.fill_transparency, OutlineTransparency = esp.settings_chams.outline_transparency}),
         arrow = esp.NewDrawing("Triangle", {Color = Color3fromRGB(255, 255, 255), Thickness = 1})
     }
 end
 
-game:GetService("RunService").RenderStepped:Connect(function()
+local ESPLoop = game:GetService("RunService").RenderStepped:Connect(function()
     for i,v in pairs(esp.players) do
         if i.Character and i.Character:FindFirstChild("Humanoid") and i.Character:FindFirstChild("HumanoidRootPart") and i.Character:FindFirstChild("Head") and i.Character:FindFirstChild("Humanoid").Health > 0 and (esp.maxdist == 0 or (i.Character.HumanoidRootPart.Position - localplayer.Character.HumanoidRootPart.Position).Magnitude < esp.maxdist) then
             local hum = i.Character.Humanoid
@@ -205,24 +193,6 @@ game:GetService("RunService").RenderStepped:Connect(function()
                 v.cham.Enabled = false
             end
 
-            if esp.settings.tracer.enabled and esp.enabled then
-                if esp.settings.tracer.origin == "Bottom" then
-                    v.tracer.From = Vector2new(workspace.CurrentCamera.ViewportSize.X / 2, workspace.CurrentCamera.ViewportSize.Y)
-                elseif esp.settings.tracer.origin == "Top" then
-                    v.tracer.From = Vector2new(workspace.CurrentCamera.ViewportSize.X / 2,0)
-                elseif esp.settings.tracer.origin == "Middle" then
-                    v.tracer.From = Vector2new(workspace.CurrentCamera.ViewportSize.X / 2, workspace.CurrentCamera.ViewportSize.Y / 2)
-                else
-                    v.tracer.From = Vector2new(workspace.CurrentCamera.ViewportSize.X / 2, workspace.CurrentCamera.ViewportSize.Y / 2)
-                end
-
-                v.tracer.To = Vector2new(Vector.X, Vector.Y)
-                v.tracer.Color = esp.settings.tracer.color
-                v.tracer.Visible = true
-            else
-                v.tracer.Visible = false
-            end
-
             if onScreen and esp.enabled then
                 if esp.settings.name.enabled then
                     v.name.Position = Vector2new(BoxSize.X / 2 + BoxPos.X, BoxPos.Y - 16)
@@ -246,7 +216,7 @@ game:GetService("RunService").RenderStepped:Connect(function()
                 if esp.settings.distance.enabled and localplayer.Character and localplayer.Character:FindFirstChild("HumanoidRootPart") then
                     v.distance.Position = Vector2new(BoxSize.X / 2 + BoxPos.X, BottomOffset)
                     v.distance.Outline = esp.settings.distance.outline
-                    v.distance.Text = "[" .. mathfloor((hrp.Position - localplayer.Character.HumanoidRootPart.Position).Magnitude / 3) .. "m]"
+                    v.distance.Text = mathfloor((hrp.Position - localplayer.Character.HumanoidRootPart.Position).Magnitude / 3) .. "m"
                     v.distance.Color = esp.settings.distance.color
                     BottomOffset = BottomOffset + 15
 
@@ -256,30 +226,6 @@ game:GetService("RunService").RenderStepped:Connect(function()
                     v.distance.Visible = true
                 else
                     v.distance.Visible = false
-                end
-
-                if esp.settings.filledbox.enabled then
-                    v.filledbox.Size = BoxSize + Vector2.new(-2, -2)
-                    v.filledbox.Position = BoxPos + Vector2.new(1, 1)
-                    v.filledbox.Color = esp.settings.filledbox.color
-                    v.filledbox.Transparency = esp.settings.filledbox.transparency
-                    v.filledbox.Visible = true
-                else
-                    v.filledbox.Visible = false
-                end
-
-                if esp.settings.box.enabled then
-                    v.boxOutline.Size = BoxSize
-                    v.boxOutline.Position = BoxPos
-                    v.boxOutline.Visible = esp.settings.box.outline
-    
-                    v.box.Size = BoxSize
-                    v.box.Position = BoxPos
-                    v.box.Color = esp.settings.box.color
-                    v.box.Visible = true
-                else
-                    v.boxOutline.Visible = false
-                    v.box.Visible = false
                 end
 
                 if esp.settings.healthbar.enabled then
@@ -338,42 +284,31 @@ game:GetService("RunService").RenderStepped:Connect(function()
                 if esp.teamcheck then
                     if esp.TeamCheck(i) then
                         v.name.Visible = esp.settings.name.enabled
-                        v.box.Visible = esp.settings.box.enabled
-                        v.filledbox.Visible = esp.settings.box.enabled
                         v.healthBar.Visible = esp.settings.healthbar.enabled
                         v.healthText.Visible = esp.settings.healthtext.enabled
                         v.distance.Visible = esp.settings.distance.enabled
                         v.viewAngle.Visible = esp.settings.viewangle.enabled
                         v.weapon.Visible = esp.settings.weapon.enabled
-                        v.tracer.Visible = esp.settings.tracer.enabled
                         v.arrow.Visible = esp.settings.arrow.enabled
                     else
                         v.name.Visible = false
-                        v.boxOutline.Visible = false
-                        v.box.Visible = false
-                        v.filledbox.Visible = false
                         v.healthBarOutline.Visible = false
                         v.healthBar.Visible = false
                         v.healthText.Visible = false
                         v.distance.Visible = false
                         v.viewAngle.Visible = false
                         v.weapon.Visible = false
-                        v.tracer.Visible = false
                         v.arrow.Visible = false
                     end
                 end
             else
                 v.name.Visible = false
-                v.boxOutline.Visible = false
-                v.box.Visible = false
-                v.filledbox.Visible = false
                 v.healthBarOutline.Visible = false
                 v.healthBar.Visible = false
                 v.healthText.Visible = false
                 v.distance.Visible = false
                 v.viewAngle.Visible = false
                 v.weapon.Visible = false
-                v.tracer.Visible = false
                 if esp.enabled and esp.settings.arrow.enabled then
                     local currentCamera = workspace.CurrentCamera
                     local screenCenter = Vector2new(workspace.CurrentCamera.ViewportSize.X / 2, workspace.CurrentCamera.ViewportSize.Y / 2);
@@ -400,9 +335,6 @@ game:GetService("RunService").RenderStepped:Connect(function()
             end
         else
             v.name.Visible = false
-            v.boxOutline.Visible = false
-            v.box.Visible = false
-            v.filledbox.Visible = false
             v.healthBarOutline.Visible = false
             v.healthBar.Visible = false
             v.healthText.Visible = false
@@ -410,184 +342,29 @@ game:GetService("RunService").RenderStepped:Connect(function()
             v.viewAngle.Visible = false
             v.cham.Enabled = false
             v.weapon.Visible = false
-            v.tracer.Visible = false
             v.arrow.Visible = false
         end
     end
 end)
-
-local function DrawLine()
-    local l = Drawing.new("Line")
-    l.Visible = false
-    l.From = Vector2.new(0, 0)
-    l.To = Vector2.new(1, 1)
-    l.Color = esp.settings.skeleton.color
-    l.Thickness = 1
-    l.Transparency = 1
-    return l
-end
-
-local function Skeletonesp(localplayer)
-    task.spawn(function()
-        repeat wait() until localplayer.Character ~= nil and localplayer.Character:FindFirstChild("Humanoid") ~= nil
-        local limbs = {}
-        local R15 = (localplayer.Character.Humanoid.RigType == Enum.HumanoidRigType.R15) and true or false
-        limbs = {
-            -- Spine
-            Head_UpperTorso = DrawLine(),
-            UpperTorso_LowerTorso = DrawLine(),
-            -- Left Arm
-            UpperTorso_LeftUpperArm = DrawLine(),
-            LeftUpperArm_LeftLowerArm = DrawLine(),
-            LeftLowerArm_LeftHand = DrawLine(),
-            -- Right Arm
-            UpperTorso_RightUpperArm = DrawLine(),
-            RightUpperArm_RightLowerArm = DrawLine(),
-            RightLowerArm_RightHand = DrawLine(),
-            -- Left Leg
-            LowerTorso_LeftUpperLeg = DrawLine(),
-            LeftUpperLeg_LeftLowerLeg = DrawLine(),
-            LeftLowerLeg_LeftFoot = DrawLine(),
-            -- Right Leg
-            LowerTorso_RightUpperLeg = DrawLine(),
-            RightUpperLeg_RightLowerLeg = DrawLine(),
-            RightLowerLeg_RightFoot = DrawLine(),
-        }
-        local function Visibility(state)
-            for i, v in pairs(limbs) do
-                v.Visible = state
-            end
-        end
-
-        local function Colorize(color)
-            for i, v in pairs(limbs) do
-                v.Color = color
-            end
-        end
-
-        local function UpdaterR15()
-            local connection
-            connection = game:GetService("RunService").RenderStepped:Connect(function()
-                if localplayer.Character ~= nil and localplayer.Character:FindFirstChild("Humanoid") ~= nil and localplayer.Character:FindFirstChild("HumanoidRootPart") ~= nil and localplayer.Character.Humanoid.Health > 0 then
-                    local HUM, vis = camera:WorldToViewportPoint(localplayer.Character.HumanoidRootPart.Position)
-                    if vis and esp.settings.skeleton.enabled and esp.enabled then
-                        -- Head
-                        local H = camera:WorldToViewportPoint(localplayer.Character.Head.Position)
-                        if limbs.Head_UpperTorso.From ~= Vector2.new(H.X, H.Y) then
-                            --Spine
-                            local UT = camera:WorldToViewportPoint(localplayer.Character.UpperTorso.Position)
-                            local LT = camera:WorldToViewportPoint(localplayer.Character.LowerTorso.Position)
-                            -- Left Arm
-                            local LUA = camera:WorldToViewportPoint(localplayer.Character.LeftUpperArm.Position)
-                            local LLA = camera:WorldToViewportPoint(localplayer.Character.LeftLowerArm.Position)
-                            local LH = camera:WorldToViewportPoint(localplayer.Character.LeftHand.Position)
-                            -- Right Arm
-                            local RUA = camera:WorldToViewportPoint(localplayer.Character.RightUpperArm.Position)
-                            local RLA = camera:WorldToViewportPoint(localplayer.Character.RightLowerArm.Position)
-                            local RH = camera:WorldToViewportPoint(localplayer.Character.RightHand.Position)
-                            -- Left leg
-                            local LUL = camera:WorldToViewportPoint(localplayer.Character.LeftUpperLeg.Position)
-                            local LLL = camera:WorldToViewportPoint(localplayer.Character.LeftLowerLeg.Position)
-                            local LF = camera:WorldToViewportPoint(localplayer.Character.LeftFoot.Position)
-                            -- Right leg
-                            local RUL = camera:WorldToViewportPoint(localplayer.Character.RightUpperLeg.Position)
-                            local RLL = camera:WorldToViewportPoint(localplayer.Character.RightLowerLeg.Position)
-                            local RF = camera:WorldToViewportPoint(localplayer.Character.RightFoot.Position)
-
-                            --Head
-                            limbs.Head_UpperTorso.From = Vector2.new(H.X, H.Y)
-                            limbs.Head_UpperTorso.To = Vector2.new(UT.X, UT.Y)
-
-                            --Spine
-                            limbs.UpperTorso_LowerTorso.From = Vector2.new(UT.X, UT.Y)
-                            limbs.UpperTorso_LowerTorso.To = Vector2.new(LT.X, LT.Y)
-
-                            -- Left Arm
-                            limbs.UpperTorso_LeftUpperArm.From = Vector2.new(UT.X, UT.Y)
-                            limbs.UpperTorso_LeftUpperArm.To = Vector2.new(LUA.X, LUA.Y)
-
-                            limbs.LeftUpperArm_LeftLowerArm.From = Vector2.new(LUA.X, LUA.Y)
-                            limbs.LeftUpperArm_LeftLowerArm.To = Vector2.new(LLA.X, LLA.Y)
-
-                            limbs.LeftLowerArm_LeftHand.From = Vector2.new(LLA.X, LLA.Y)
-                            limbs.LeftLowerArm_LeftHand.To = Vector2.new(LH.X, LH.Y)
-
-                            -- Right Arm
-                            limbs.UpperTorso_RightUpperArm.From = Vector2.new(UT.X, UT.Y)
-                            limbs.UpperTorso_RightUpperArm.To = Vector2.new(RUA.X, RUA.Y)
-
-                            limbs.RightUpperArm_RightLowerArm.From = Vector2.new(RUA.X, RUA.Y)
-                            limbs.RightUpperArm_RightLowerArm.To = Vector2.new(RLA.X, RLA.Y)
-
-                            limbs.RightLowerArm_RightHand.From = Vector2.new(RLA.X, RLA.Y)
-                            limbs.RightLowerArm_RightHand.To = Vector2.new(RH.X, RH.Y)
-
-                            -- Left Leg
-                            limbs.LowerTorso_LeftUpperLeg.From = Vector2.new(LT.X, LT.Y)
-                            limbs.LowerTorso_LeftUpperLeg.To = Vector2.new(LUL.X, LUL.Y)
-
-                            limbs.LeftUpperLeg_LeftLowerLeg.From = Vector2.new(LUL.X, LUL.Y)
-                            limbs.LeftUpperLeg_LeftLowerLeg.To = Vector2.new(LLL.X, LLL.Y)
-
-                            limbs.LeftLowerLeg_LeftFoot.From = Vector2.new(LLL.X, LLL.Y)
-                            limbs.LeftLowerLeg_LeftFoot.To = Vector2.new(LF.X, LF.Y)
-
-                            -- Right Leg
-                            limbs.LowerTorso_RightUpperLeg.From = Vector2.new(LT.X, LT.Y)
-                            limbs.LowerTorso_RightUpperLeg.To = Vector2.new(RUL.X, RUL.Y)
-
-                            limbs.RightUpperLeg_RightLowerLeg.From = Vector2.new(RUL.X, RUL.Y)
-                            limbs.RightUpperLeg_RightLowerLeg.To = Vector2.new(RLL.X, RLL.Y)
-
-                            limbs.RightLowerLeg_RightFoot.From = Vector2.new(RLL.X, RLL.Y)
-                            limbs.RightLowerLeg_RightFoot.To = Vector2.new(RF.X, RF.Y)
-                        end
-
-                        Colorize(esp.settings.skeleton.color)
-
-                        if limbs.Head_UpperTorso.Visible ~= true then
-                            Visibility(true)
-                        end
-                    else 
-                        if limbs.Head_UpperTorso.Visible ~= false then
-                            Visibility(false)
-                        end
-                    end
-                else 
-                    if limbs.Head_UpperTorso.Visible ~= false then
-                        Visibility(false)
-                    end
-                    if game.Players:FindFirstChild(localplayer.Name) == nil then 
-                        for i, v in pairs(limbs) do
-                            v:Remove()
-                        end
-                        connection:Disconnect()
-                    end
-                end
-            end)
-        end
-        coroutine.wrap(UpdaterR15)()
-    end)
-end
 
 task.spawn(function()
 repeat wait() until game:GetService("Workspace"):FindFirstChild("AiZones") and workspace:FindFirstChild("DroppedItems")
 
 --Bot Esp
  function AddBotEsp(Path)
-    local BotEsp = Drawing.new("Text")
+    local BotEsp = Drawingnew("Text")
     BotEsp.Visible = false
     BotEsp.Center = true
     BotEsp.Outline = true
     BotEsp.Font = 3
     BotEsp.Size = 10
-    local BotEsp2 = Drawing.new("Text")
+    local BotEsp2 = Drawingnew("Text")
     BotEsp2.Visible = false
     BotEsp2.Center = true
     BotEsp2.Outline = true
     BotEsp2.Font = 3
     BotEsp2.Size = 10
-    local BotEsp3 = Drawing.new("Text")
+    local BotEsp3 = Drawingnew("Text")
     BotEsp3.Visible = false
     BotEsp3.Center = true
     BotEsp3.Outline = true
@@ -635,9 +412,9 @@ repeat wait() until game:GetService("Workspace"):FindFirstChild("AiZones") and w
                         Path:FindFirstChildOfClass("MeshPart").Position
                     )
                     if drop_onscreen then
-                        BotEsp.Position = Vector2.new(drop_pos.X, drop_pos.Y)
-                        BotEsp2.Position = Vector2.new(drop_pos.X, drop_pos.Y + esp.customsettings.ai.size)
-                        BotEsp3.Position = Vector2.new(drop_pos.X, drop_pos.Y - esp.customsettings.ai.size)
+                        BotEsp.Position = Vector2new(drop_pos.X, drop_pos.Y)
+                        BotEsp2.Position = Vector2new(drop_pos.X, drop_pos.Y + esp.customsettings.ai.size)
+                        BotEsp3.Position = Vector2new(drop_pos.X, drop_pos.Y - esp.customsettings.ai.size)
                         BotEsp.Text = Path.Name
                         if esp.customsettings.aidistance.enabled then
                             if
@@ -699,13 +476,13 @@ end)
 
 --Corpse Esp
  function AddCorpseESP(Corpse)
-    local CorpseEsp = Drawing.new("Text")
+    local CorpseEsp = Drawingnew("Text")
     CorpseEsp.Visible = false
     CorpseEsp.Center = true
     CorpseEsp.Outline = true
     CorpseEsp.Font = 3
     CorpseEsp.Size = 10
-    local CorpseEsp2 = Drawing.new("Text")
+    local CorpseEsp2 = Drawingnew("Text")
     CorpseEsp2.Visible = false
     CorpseEsp2.Center = true
     CorpseEsp2.Outline = true
@@ -751,8 +528,8 @@ end)
                     local drop_pos, drop_onscreen =
                         game:GetService("Workspace").CurrentCamera:WorldToViewportPoint(meshpart.Position)
                     if drop_onscreen then
-                        CorpseEsp.Position = Vector2.new(drop_pos.X, drop_pos.Y)
-                        CorpseEsp2.Position = Vector2.new(drop_pos.X, drop_pos.Y + esp.customsettings.corpse.size)
+                        CorpseEsp.Position = Vector2new(drop_pos.X, drop_pos.Y)
+                        CorpseEsp2.Position = Vector2new(drop_pos.X, drop_pos.Y + esp.customsettings.corpse.size)
                         CorpseEsp.Text = Corpse.Name .. "'s " .. "corpse"
                         if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                             CorpseEsp2.Text =
@@ -802,13 +579,13 @@ end)
 
 --Extract Esp
  function AddExtractEsp(Extract)
-    local ExtractEsp = Drawing.new("Text")
+    local ExtractEsp = Drawingnew("Text")
     ExtractEsp.Visible = false
     ExtractEsp.Center = true
     ExtractEsp.Outline = true
     ExtractEsp.Font = 3
     ExtractEsp.Size = 10
-    local ExtractEsp2 = Drawing.new("Text")
+    local ExtractEsp2 = Drawingnew("Text")
     ExtractEsp2.Visible = false
     ExtractEsp2.Center = true
     ExtractEsp2.Outline = true
@@ -826,8 +603,8 @@ end)
                 ExtractEsp2.Size = esp.customsettings.extract.size
                 local Extract_pos, Extract_onscreen = game:GetService("Workspace").CurrentCamera:WorldToViewportPoint(Extract.Position)
                 if Extract_onscreen then
-                    ExtractEsp.Position = Vector2.new(Extract_pos.X, Extract_pos.Y)
-                    ExtractEsp2.Position = Vector2.new(Extract_pos.X, Extract_pos.Y + esp.customsettings.extract.size)
+                    ExtractEsp.Position = Vector2new(Extract_pos.X, Extract_pos.Y)
+                    ExtractEsp2.Position = Vector2new(Extract_pos.X, Extract_pos.Y + esp.customsettings.extract.size)
                     ExtractEsp.Text = "exit"
                     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                         ExtractEsp2.Text = math.round((Extract.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude / 3) .. "m"
@@ -869,13 +646,11 @@ end)
 for _,v in ipairs(players:GetPlayers()) do
     if v ~= localplayer then
         esp.NewPlayer(v)
-        Skeletonesp(v)
     end
 end
 
 players.ChildAdded:Connect(function(v)
     esp.NewPlayer(v)
-    Skeletonesp(v)
 end)
 
 players.PlayerRemoving:Connect(function(v)
@@ -915,7 +690,7 @@ local settings = {
 
 -- create our center circle, we update later
 
-local circle = Drawing.new('Circle')
+local circle = Drawingnew('Circle')
 circle.Position = centerofscreen
 circle.Thickness = 2
 
@@ -1545,7 +1320,7 @@ task.spawn(function()
             for i = 1, #players do
                 if players[i] then
                     if players[i].Distance <= settings.aimdistance then
-                        if players[i].isOnScreen and ((Vector2.new(players[i].HeadPoint.X, players[i].HeadPoint.Y) - camera.ViewportSize/2).Magnitude) <= circle.Radius then
+                        if players[i].isOnScreen and ((Vector2new(players[i].HeadPoint.X, players[i].HeadPoint.Y) - camera.ViewportSize/2).Magnitude) <= circle.Radius then
                             table.insert(possibletargets, players[i])
                             local lowest = possibletargets[1].Distance
                             if GetTableLng(possibletargets) > 1 then
@@ -1606,6 +1381,21 @@ end);
 -- unload func, sometimes breaks lmao
 Library:OnUnload(function()
     WatermarkConnection:Disconnect()
+    ESPLoop:Disconnect()
+    ESPLoop = nil
+    
+    for i,v in pairs(esp.players) do
+        for i2, v2 in pairs(v) do
+            if v2 == "cham" then
+                v2:Destroy()
+            else
+                v2:Remove()
+            end
+        end
+    end
+
+    table.clear(esp)
+    esp = nil
 
     circle:Remove()
 
@@ -1643,7 +1433,7 @@ local MenuGroup = Tabs['UI Settings']:AddLeftGroupbox('Menu')
 
 -- I set NoUI so it does not show up in the keybinds menu
 MenuGroup:AddButton('Dex Explorer', function() loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/dex.lua"))() end)
-MenuGroup:AddButton('Unload Menu', function() Library:Unload() end)
+MenuGroup:AddButton('Unload', function() Library:Unload() end)
 MenuGroup:AddButton('Rejoin', function() game:GetService('TeleportService'):TeleportToPlaceInstance(game.PlaceId, game.JobId) end)
 MenuGroup:AddLabel('Menu bind'):AddKeyPicker('MenuKeybind', { Default = 'End', NoUI = true, Text = 'Menu keybind' })
 

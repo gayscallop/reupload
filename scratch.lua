@@ -593,7 +593,7 @@ end)
     ExtractEsp2.Size = 10
     local renderstepped
     renderstepped = game:GetService("RunService").RenderStepped:Connect(function()
-        if Extract and Extract.Position then
+        if Extract then
             if esp.customsettings.extract.enabled then
                 ExtractEsp.Color = esp.customsettings.extract.color
                 ExtractEsp2.Color = esp.customsettings.extractdistance.color
@@ -601,7 +601,7 @@ end)
                 ExtractEsp2.Outline = esp.customsettings.extract.outline
                 ExtractEsp.Size = esp.customsettings.extract.size
                 ExtractEsp2.Size = esp.customsettings.extract.size
-                local Extract_pos, Extract_onscreen = game:GetService("Workspace").CurrentCamera:WorldToViewportPoint(Extract.Position)
+                local Extract_pos, Extract_onscreen = camera:WorldToViewportPoint(Extract.CFrame.Position)
                 if Extract_onscreen then
                     ExtractEsp.Position = Vector2new(Extract_pos.X, Extract_pos.Y)
                     ExtractEsp2.Position = Vector2new(Extract_pos.X, Extract_pos.Y + esp.customsettings.extract.size)
@@ -632,7 +632,7 @@ end)
  end
 if workspace.NoCollision:FindFirstChild("ExitLocations") then
     for _,v in next, workspace.NoCollision.ExitLocations:GetChildren() do 
-        AddExtractEsp(v)
+	AddExtractEsp(v)
     end
 
     workspace.NoCollision.ExitLocations.DescendantAdded:Connect(function(Child)

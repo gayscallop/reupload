@@ -593,7 +593,7 @@ end)
     ExtractEsp2.Size = 10
     local renderstepped
     renderstepped = game:GetService("RunService").RenderStepped:Connect(function()
-        if Extract then
+        if Extract and Extract.Position then
             if esp.customsettings.extract.enabled then
                 ExtractEsp.Color = esp.customsettings.extract.color
                 ExtractEsp2.Color = esp.customsettings.extractdistance.color

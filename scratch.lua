@@ -601,7 +601,7 @@ end)
                 ExtractEsp2.Outline = esp.customsettings.extract.outline
                 ExtractEsp.Size = esp.customsettings.extract.size
                 ExtractEsp2.Size = esp.customsettings.extract.size
-                local Extract_pos, Extract_onscreen = camera:WorldToViewportPoint(Extract.CFrame.Position)
+                local Extract_pos, Extract_onscreen = camera:WorldToViewportPoint(Extract.Position)
                 if Extract_onscreen then
                     ExtractEsp.Position = Vector2new(Extract_pos.X, Extract_pos.Y)
                     ExtractEsp2.Position = Vector2new(Extract_pos.X, Extract_pos.Y + esp.customsettings.extract.size)

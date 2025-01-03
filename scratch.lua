@@ -1,3 +1,13 @@
+if not LPH_OBFUSCATED and not LPH_JIT_ULTRA then
+	LPH_JIT_ULTRA = function(f) return f end
+	LPH_JIT_MAX = function(f) return f end
+	LPH_JIT = function(f) return f end
+	LPH_ENCSTR = function(s) return s end
+	LPH_STRENC = function(s) return s end
+	LPH_CRASH = function() while true do end return end
+end
+
+
 local repo = 'https://raw.githubusercontent.com/violin-suzutsuki/LinoriaLib/main/'
 
 local Library = loadstring(game:HttpGet(repo .. 'Library.lua'))()
@@ -142,6 +152,18 @@ esp.TeamCheck = function(v)
     return true
 end
 
+esp.fullVisCheck = function(v)
+    if (esp.WallCheck(v.Character.HumanoidRootPart) 
+    or esp.WallCheck(v.Character.Head) 
+    or esp.WallCheck(v.Character.RightUpperArm) 
+    or esp.WallCheck(v.Character.LeftUpperArm) 
+    or esp.WallCheck(v.Character.LeftLowerLeg) 
+    or esp.WallCheck(v.Character.RightLowerLeg)) 
+    then
+        return true
+    end
+end
+
 esp.NewPlayer = function(v)
     esp.players[v] = {
         name = esp.NewDrawing("Text", {Color = Color3fromRGB(255, 255, 255), Outline = true, Center = true, Size = 13, Font = 10}),
@@ -175,8 +197,8 @@ local ESPLoop = game:GetService("RunService").RenderStepped:Connect(function()
                 v.cham.Adornee = i.Character
                 v.cham.Enabled = esp.settings_chams.enabled
                 v.cham.OutlineTransparency = esp.settings_chams.outline and esp.settings_chams.outline_transparency or 1
-                v.cham.OutlineColor = esp.settings_chams.autocolor and esp.settings_chams.autocolor_outline and esp.WallCheck(i.Character.Head) and esp.settings_chams.visible_Color or esp.settings_chams.autocolor and esp.settings_chams.autocolor_outline and not esp.WallCheck(i.Character.Head) and esp.settings_chams.invisible_Color or esp.settings_chams.outline_color
-                v.cham.FillColor = esp.settings_chams.autocolor and esp.WallCheck(i.Character.Head) and esp.settings_chams.visible_Color or esp.settings_chams.autocolor and not esp.WallCheck(i.Character.Head) and esp.settings_chams.invisible_Color or esp.settings_chams.fill_color
+                v.cham.OutlineColor = esp.settings_chams.autocolor and esp.settings_chams.autocolor_outline and (esp.WallCheck(head) or esp.WallCheck(hrp)) and esp.settings_chams.visible_Color or esp.settings_chams.autocolor and esp.settings_chams.autocolor_outline and not (esp.WallCheck(head) or esp.WallCheck(HRP)) and esp.settings_chams.invisible_Color or esp.settings_chams.outline_color
+                v.cham.FillColor = esp.settings_chams.autocolor and (esp.WallCheck(head) or esp.WallCheck(hrp)) and esp.settings_chams.visible_Color or esp.settings_chams.autocolor and not (esp.WallCheck(head) or esp.WallCheck(hrp)) and esp.settings_chams.invisible_Color or esp.settings_chams.fill_color
                 v.cham.FillTransparency = esp.settings_chams.fill_transparency
                 if esp.settings_chams.occluded then
                 	v.cham.DepthMode = "Occluded"
@@ -715,8 +737,10 @@ end
 function addPlayer(player) 
     local vector, onScreen = camera:WorldToViewportPoint(player.Character.Head.Position)
     playerList.insert({
+        Player = player,
         Name = player.Name, 
         Head = player.Character.Head,
+        HRP = player.Character.HumanoidRootPart,
         HeadPosition = player.Character.Head.Position,
         Distance = math.ceil((game.Players.LocalPlayer.Character:FindFirstChild("Head").Position - player.Character.Head.Position).Magnitude / 3.571),
         HeadPoint = vector,
@@ -724,8 +748,6 @@ function addPlayer(player)
         isTeam = esp.TeamCheck(player)
     })
 end
-
--- runs every fucking nanosecond, somehow doesnt lag though
 
 function updatePlayers()
     if not(Library.Unloaded) then
@@ -768,8 +790,8 @@ local MiscBox = Tabs.Misc:AddLeftGroupbox('Misc')
 
 -- left side (aimbot related)
 
-AimbotBox:AddToggle('memoryaimbot', {
-    Text = 'Memory Aimbot',
+AimbotBox:AddToggle('aimbot', {
+    Text = 'Silent Aim',
     Default = settings.aimbot,
 
     Callback = function(Value)
@@ -1292,12 +1314,6 @@ task.spawn(function()
 
         local zoomBind = Options.zoombind:GetState()
         settings.zoomBindHeld = zoomBind
-    
-        -- update players list
-        updatePlayers()
-
-        -- get our players list in here
-        local players = playerList.get()
 
         local localsettings = game.ReplicatedStorage.Players:FindFirstChild(localplayer.Name).Settings
         if localsettings and localplayer then
@@ -1307,47 +1323,58 @@ task.spawn(function()
                 localsettings.GameplaySettings:SetAttribute("DefaultFOV", defaultFov)
             end
         end
+        if Library.Unloaded then break end
+    end
+end)
 
-        -- memory aimbot, its just here cuz idc and has to run a lot
-        -- all done if enabled but not aiming until bind held so we can calc and not calc the second the button gets held, less tweaky
-        if settings.aimbot then
-            local possibletargets = {}
-            for i = 1, #players do
-                if players[i] then
-                    if players[i].Distance <= settings.aimdistance then
-                        if players[i].isOnScreen and ((Vector2new(players[i].HeadPoint.X, players[i].HeadPoint.Y) - camera.ViewportSize/2).Magnitude) <= circle.Radius then
-                            table.insert(possibletargets, players[i])
-                            local lowest = possibletargets[1].Distance
-                            if GetTableLng(possibletargets) > 1 then
-                                for o = 2, #possibletargets do
-                                    if possibletargets[o].Distance < lowest then
-                                        lowest = possibletargets[o].Distance
-                                        settings.activetarget = possibletargets[o]
-                                    end
-                                    table.remove(possibletargets, o)
-                                end
-                            else
-                                settings.activetarget = players[i]
-                            end
-                            
-                            if settings.activetarget and settings.aimBindHeld and not(settings.activetarget.isTeam) then
-                                if (settings.vischeck and esp.WallCheck(settings.activetarget.Head)) or not(settings.vischeck) then
-                                    workspace.CurrentCamera.CFrame = CFrame.new(workspace.CurrentCamera.CFrame.Position, settings.activetarget.HeadPosition)
+LPH_JIT_ULTRA(function()
+    local hook = nil
+    hook = hookfunction(require(game.ReplicatedStorage.Modules.FPS.Bullet).CreateBullet, function(...)
+        local args = {...}
+
+        updatePlayers()
+
+        local players = playerList.get()
+
+        local possibletargets = {}
+        for i = 1, #players do
+            if players[i] and not(players[i].isTeam) then
+                if players[i].Distance <= settings.aimdistance then
+                    if players[i].isOnScreen and ((Vector2new(players[i].HeadPoint.X, players[i].HeadPoint.Y) - camera.ViewportSize/2).Magnitude) <= circle.Radius then
+                        table.insert(possibletargets, players[i])
+                        local lowest = possibletargets[1].Distance
+                        if GetTableLng(possibletargets) > 1 then
+                            for o = 2, #possibletargets do
+                                if possibletargets[o].Distance < lowest then
+                                    lowest = possibletargets[o].Distance
+                                    settings.activetarget = possibletargets[o]
                                 end
                             end
                         else
-                            settings.activetarget = nil
+                            settings.activetarget = possibletargets[1]
                         end
                     end
                 end
             end
         end
 
-        -- clear list
+        local target = settings.activetarget
+        if settings.aimbot and target then
+            if (settings.vischeck and esp.fullVisCheck(target.Player)) or not(settings.vischeck) then
+                args[9] = {CFrame = CFrame.new(args[9].CFrame.Position, target.Head)}
+            end
+        end
+
+        for p = 1, #possibletargets do
+            table.remove(possibletargets, p)
+        end
+
         playerList.clear()
-        if Library.Unloaded then break end
-    end
-end)
+        settings.activetarget = nil
+
+        return hook(table.unpack(args))
+    end)
+end)()
 
 -- watermark
 local watermark = false

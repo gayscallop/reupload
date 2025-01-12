@@ -735,16 +735,17 @@ function playerList.clear()
 end
 
 function addPlayer(player) 
-    local vector, onScreen = camera:WorldToViewportPoint(player.Character.Head.Position)
+    local headvector, headonscreen = camera:WorldToViewportPoint(player.Character.Head.Position)
     playerList.insert({
         Player = player,
         Name = player.Name, 
         Head = player.Character.Head,
-        HRP = player.Character.HumanoidRootPart,
         HeadPosition = player.Character.Head.Position,
+        HRP = player.Character.HumanoidRootPart,
+        HRPPosition = player.Character.HumanoidRootPart.Position,
         Distance = math.ceil((game.Players.LocalPlayer.Character:FindFirstChild("Head").Position - player.Character.Head.Position).Magnitude / 3.571),
-        HeadPoint = vector,
-        isOnScreen = onScreen,
+        HeadPoint = headvector,
+        HeadonScreen = headonscreen,
         isTeam = esp.TeamCheck(player)
     })
 end
@@ -879,7 +880,7 @@ GunModBox:AddSlider('recoilslider', {
     Text = 'Recoil Percentage',
     Default = settings.recoilslider,
     Min = 0,
-    Max = 100,
+    Max = 200,
     Rounding = 1,
     Compact = false,
 
@@ -902,7 +903,7 @@ GunModBox:AddSlider('dropslider', {
     Text = 'Drop Percentage',
     Default = settings.dropslider,
     Min = 0,
-    Max = 100,
+    Max = 200,
     Rounding = 1,
     Compact = false,
 
@@ -931,7 +932,7 @@ GunModBox:AddSlider('spreadslider', {
     Text = 'Spread Percentage',
     Default = settings.spreadslider,
     Min = 0,
-    Max = 100,
+    Max = 200,
     Rounding = 1,
     Compact = false,
 
@@ -954,7 +955,7 @@ GunModBox:AddSlider('bulletslider', {
     Text = 'Bullet Speed Percentage',
     Default = settings.bulletspeed,
     Min = 0,
-    Max = 300,
+    Max = 200,
     Rounding = 1,
     Compact = false,
 
@@ -1340,7 +1341,7 @@ LPH_JIT_ULTRA(function()
         for i = 1, #players do
             if players[i] and not(players[i].isTeam) then
                 if players[i].Distance <= settings.aimdistance then
-                    if players[i].isOnScreen and ((Vector2new(players[i].HeadPoint.X, players[i].HeadPoint.Y) - camera.ViewportSize/2).Magnitude) <= circle.Radius then
+                    if (players[i].HeadonScreen and ((Vector2new(players[i].HeadPoint.X, players[i].HeadPoint.Y) - camera.ViewportSize/2).Magnitude) <= circle.Radius) then
                         table.insert(possibletargets, players[i])
                         local lowest = possibletargets[1].Distance
                         if GetTableLng(possibletargets) > 1 then
@@ -1360,7 +1361,9 @@ LPH_JIT_ULTRA(function()
 				
         if settings.aimbot and settings.activetarget then
             if (settings.vischeck and esp.fullVisCheck(settings.activetarget.Player)) or not(settings.vischeck) then
-                args[9] = {CFrame = CFrame.new(args[9].CFrame.Position, settings.activetarget.Head)}
+                if (esp.WallCheck(settings.activetarget.Head)) then
+                    args[9] = {CFrame = CFrame.new(args[9].CFrame.Position, settings.activetarget.HeadPosition)}
+                end
             end
         end
 

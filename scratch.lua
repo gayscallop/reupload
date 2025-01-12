@@ -1357,11 +1357,10 @@ LPH_JIT_ULTRA(function()
                 end
             end
         end
-
-        local target = settings.activetarget
-        if settings.aimbot and target then
-            if (settings.vischeck and esp.fullVisCheck(target.Player)) or not(settings.vischeck) then
-                args[9] = {CFrame = CFrame.new(args[9].CFrame.Position, target.Head)}
+				
+        if settings.aimbot and settings.activetarget then
+            if (settings.vischeck and esp.fullVisCheck(settings.activetarget.Player)) or not(settings.vischeck) then
+                args[9] = {CFrame = CFrame.new(args[9].CFrame.Position, settings.activetarget.Head)}
             end
         end
 

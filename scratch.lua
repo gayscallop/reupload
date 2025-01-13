@@ -152,18 +152,6 @@ esp.TeamCheck = function(v)
     return true
 end
 
-esp.fullVisCheck = function(v)
-    if (esp.WallCheck(v.Character.HumanoidRootPart) 
-    or esp.WallCheck(v.Character.Head) 
-    or esp.WallCheck(v.Character.RightUpperArm) 
-    or esp.WallCheck(v.Character.LeftUpperArm) 
-    or esp.WallCheck(v.Character.LeftLowerLeg) 
-    or esp.WallCheck(v.Character.RightLowerLeg)) 
-    then
-        return true
-    end
-end
-
 esp.NewPlayer = function(v)
     esp.players[v] = {
         name = esp.NewDrawing("Text", {Color = Color3fromRGB(255, 255, 255), Outline = true, Center = true, Size = 13, Font = 10}),
@@ -238,7 +226,7 @@ local ESPLoop = game:GetService("RunService").RenderStepped:Connect(function()
                 if esp.settings.distance.enabled and localplayer.Character and localplayer.Character:FindFirstChild("HumanoidRootPart") then
                     v.distance.Position = Vector2new(BoxSize.X / 2 + BoxPos.X, BottomOffset)
                     v.distance.Outline = esp.settings.distance.outline
-                    v.distance.Text = mathfloor((hrp.Position - localplayer.Character.HumanoidRootPart.Position).Magnitude / 3) .. "m"
+                    v.distance.Text = mathfloor((hrp.Position - localplayer.Character.HumanoidRootPart.Position).Magnitude / 3.571) .. "m"
                     v.distance.Color = esp.settings.distance.color
                     BottomOffset = BottomOffset + 15
 
@@ -394,9 +382,7 @@ repeat wait() until game:GetService("Workspace"):FindFirstChild("AiZones") and w
     BotEsp3.Size = 10
     --local chamcham = esp.NewCham({FillColor = esp.customsettings.aichams.color, OutlineColor = Color3.new(0,0,0), FillTransparency = 0, OutlineTransparency = 1})
     local renderstepped
-    renderstepped =
-        game:GetService("RunService").RenderStepped:Connect(
-        function()
+    renderstepped = game:GetService("RunService").RenderStepped:Connect(function()
             --[[if esp.customsettings.aichams.enabled then
                 chamcham.Enabled = true
                 if esp.customsettings.aichams.occluded then
@@ -446,7 +432,7 @@ repeat wait() until game:GetService("Workspace"):FindFirstChild("AiZones") and w
                                 BotEsp2.Text =
                                     math.round(
                                     (Path:FindFirstChildOfClass("MeshPart").Position -
-                                        game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude / 3
+                                        game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude / 3.571
                                 ) .. "m"
                                 BotEsp2.Visible = true
                             else
@@ -479,8 +465,8 @@ repeat wait() until game:GetService("Workspace"):FindFirstChild("AiZones") and w
                 --chamcham:Destroy()
                 renderstepped:Disconnect()
             end
-        end
-    )
+            if Library.Unloaded then renderstepped:Disconnect() end
+        end)
  end
 
 for i,v in pairs(game:GetService("Workspace").AiZones:GetDescendants()) do
@@ -512,9 +498,7 @@ end)
     CorpseEsp2.Size = 10
     --local chamcham = esp.NewCham({FillColor = esp.customsettings.corpsechams.color, OutlineColor = Color3.new(0,0,0), FillTransparency = 0, OutlineTransparency = 1})
     local renderstepped
-    renderstepped =
-        game:GetService("RunService").RenderStepped:Connect(
-        function()
+    renderstepped = game:GetService("RunService").RenderStepped:Connect(function()
             --[[ if esp.customsettings.corpsechams.enabled then
                 chamcham.Enabled = true
                 if esp.customsettings.corpsechams.occluded then
@@ -556,9 +540,7 @@ end)
                         if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                             CorpseEsp2.Text =
                                 math.round(
-                                (meshpart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude /
-                                    3
-                            ) .. "m"
+                                (meshpart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude / 3.571) .. "m"
                         end
                         
                         if esp.customsettings.corpsedistance.enabled then
@@ -582,8 +564,8 @@ end)
                 --chamcham:Destroy()
                 renderstepped:Disconnect()
             end
-        end
-    )
+            if Library.Unloaded then renderstepped:Disconnect() end
+        end)
  end
 
 for _,v in next, workspace.DroppedItems:GetChildren() do 
@@ -629,7 +611,7 @@ end)
                     ExtractEsp2.Position = Vector2new(Extract_pos.X, Extract_pos.Y + esp.customsettings.extract.size)
                     ExtractEsp.Text = "exit"
                     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                        ExtractEsp2.Text = math.round((Extract.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude / 3) .. "m"
+                        ExtractEsp2.Text = math.round((Extract.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude / 3.571) .. "m"
                     end
                     if esp.customsettings.extractdistance.enabled then
                         ExtractEsp2.Visible = true
@@ -650,6 +632,7 @@ end)
             ExtractEsp2:Remove()
             renderstepped:Disconnect()
         end
+        if Library.Unloaded then renderstepped:Disconnect() end
     end)
  end
 if workspace.NoCollision:FindFirstChild("ExitLocations") then
@@ -689,7 +672,6 @@ local settings = {
     aimbot = true,
     vischeck = false,
     aimdistance = 150,
-    aimBindHeld = false,
 
     fovcircle = false,
     fovcolor = Color3.fromRGB(255, 255, 255),
@@ -710,6 +692,14 @@ local settings = {
 local circle = Drawingnew('Circle')
 circle.Position = centerofscreen
 circle.Thickness = 2
+
+local targetname = Drawingnew('Text')
+targetname.Center = true
+targetname.Outline = true
+
+local targetvisible = Drawingnew('Text')
+targetvisible.Center = true
+targetvisible.Outline = true
 
 -- how we do player lists of valid data, this is really goofy lol
 
@@ -806,19 +796,6 @@ AimbotBox:AddToggle('vischeck', {
 
     Callback = function(Value)
         settings.vischeck = Value
-    end
-})
-
-AimbotBox:AddLabel('Aimbot Bind'):AddKeyPicker('aimbind', {
-    Default = 'MB2',
-    SyncToggleState = false,
-    Mode = 'Hold',
-
-    Text = 'Memory Aim',
-    NoUI = false,
-
-    Callback = function(Value)
-        
     end
 })
 
@@ -1287,59 +1264,20 @@ MiscBox:AddSlider('defaultfov', {
     end
 })
 
--- OUR LOOP  YIPPEE
+function getTarget(vischeck)
+    playerList.clear()
+    settings.activetarget = nil
 
-function round(x)
-  return x>=0 and math.floor(x+0.5) or math.ceil(x-0.5)
-end
+    updatePlayers()
 
+    local players = playerList.get()
 
-task.spawn(function()
-    while true do
-        -- skull
-        wait(0.000001)
+    local testSubject = nil
 
-        -- update cirlce
-        circle.Visible = settings.fovcircle
-        circle.Color = settings.fovcolor
-
-        local rad = settings.fovradius
-        if settings.zoomBindHeld and settings.dynamicfov then
-            rad = rad * round(defaultFov/settings.zoomFov)
-        end
-        circle.Radius = rad
-
-        -- check bind and update 
-        local aimBind = Options.aimbind:GetState()
-        settings.aimBindHeld = aimBind
-
-        local zoomBind = Options.zoombind:GetState()
-        settings.zoomBindHeld = zoomBind
-
-        local localsettings = game.ReplicatedStorage.Players:FindFirstChild(localplayer.Name).Settings
-        if localsettings and localplayer then
-            if settings.zoomBindHeld then
-                localsettings.GameplaySettings:SetAttribute("DefaultFOV", settings.zoomFov)
-            else
-                localsettings.GameplaySettings:SetAttribute("DefaultFOV", defaultFov)
-            end
-        end
-        if Library.Unloaded then break end
-    end
-end)
-
-LPH_JIT_ULTRA(function()
-    local hook = nil
-    hook = hookfunction(require(game.ReplicatedStorage.Modules.FPS.Bullet).CreateBullet, function(...)
-        local args = {...}
-
-        updatePlayers()
-
-        local players = playerList.get()
-
-        local possibletargets = {}
-        for i = 1, #players do
-            if players[i] and not(players[i].isTeam) then
+    local possibletargets = {}
+    for i = 1, #players do
+        if ((settings.vischeck and esp.WallCheck(players[i].Head)) or not(settings.vischeck)) or not(vischeck) then
+            if players[i] and not(players[i].isTeam) and players[i].Name ~= localplayer.Name then
                 if players[i].Distance <= settings.aimdistance then
                     if (players[i].HeadonScreen and ((Vector2new(players[i].HeadPoint.X, players[i].HeadPoint.Y) - camera.ViewportSize/2).Magnitude) <= circle.Radius) then
                         table.insert(possibletargets, players[i])
@@ -1348,31 +1286,89 @@ LPH_JIT_ULTRA(function()
                             for o = 2, #possibletargets do
                                 if possibletargets[o].Distance < lowest then
                                     lowest = possibletargets[o].Distance
-                                    settings.activetarget = possibletargets[o]
+                                    testSubject = possibletargets[o]
                                 end
                             end
                         else
-                            settings.activetarget = possibletargets[1]
+                            testSubject = possibletargets[1]
                         end
                     end
                 end
             end
         end
+    end
 				
-        if settings.aimbot and settings.activetarget then
-            if (settings.vischeck and esp.fullVisCheck(settings.activetarget.Player)) or not(settings.vischeck) then
-                if (esp.WallCheck(settings.activetarget.Head)) then
-                    args[9] = {CFrame = CFrame.new(args[9].CFrame.Position, settings.activetarget.HeadPosition)}
-                end
-            end
-        end
+    if testSubject then
+        settings.activetarget = testSubject
+    end
 
-        for p = 1, #possibletargets do
-            table.remove(possibletargets, p)
-        end
+    for p = 1, #possibletargets do
+        table.remove(possibletargets, p)
+    end
 
-        playerList.clear()
-        settings.activetarget = nil
+    return settings.activetarget
+end
+
+function round(x)
+  return x>=0 and math.floor(x+0.5) or math.ceil(x-0.5)
+end
+
+local mainloop = nil
+mainloop = game:GetService("RunService").Heartbeat:Connect(function()
+    local targ = getTarget(false)
+    if targ then
+        targetname.Position = Vector2new(centerofscreen.X, centerofscreen.Y+10)
+        targetname.Visible = true
+        targetname.Color = settings.fovcolor
+        targetname.Text = "Target: " .. targ.Name
+
+        local vischeck = esp.WallCheck(targ.HRP) or esp.WallCheck(targ.Head)
+        if not(vischeck) then
+            vischeck = false
+        end
+        targetvisible.Position = Vector2new(centerofscreen.X, centerofscreen.Y+25)
+        targetvisible.Visible = true
+        targetvisible.Color = settings.fovcolor
+        targetvisible.Text = "Visible: " .. tostring(vischeck)
+    else
+        targetname.Visible = false
+        targetvisible.Visible = false
+    end
+
+        -- update cirlce
+    circle.Visible = settings.fovcircle
+    circle.Color = settings.fovcolor
+
+    local rad = settings.fovradius
+    if settings.zoomBindHeld and settings.dynamicfov then
+        rad = rad * round(defaultFov/settings.zoomFov)
+    end
+    circle.Radius = rad
+
+    local zoomBind = Options.zoombind:GetState()
+    settings.zoomBindHeld = zoomBind
+
+    local localsettings = game.ReplicatedStorage.Players:FindFirstChild(localplayer.Name).Settings
+    if localsettings and localplayer then
+        if settings.zoomBindHeld then
+            localsettings.GameplaySettings:SetAttribute("DefaultFOV", settings.zoomFov)
+        else
+            localsettings.GameplaySettings:SetAttribute("DefaultFOV", defaultFov)
+        end
+    end
+    if Library.Unloaded then mainloop:Disconnect() end
+end)
+
+LPH_JIT_ULTRA(function()
+    local hook = nil
+    hook = hookfunction(require(game.ReplicatedStorage.Modules.FPS.Bullet).CreateBullet, function(...)
+        local args = {...}
+
+        local target = getTarget(true)
+
+        if target and settings.aimbot then
+            args[9] = {CFrame = CFrame.new(args[9].CFrame.Position, target.HeadPosition)}
+        end
 
         return hook(table.unpack(args))
     end)

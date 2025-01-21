@@ -7,6 +7,7 @@ if not LPH_OBFUSCATED and not LPH_JIT_ULTRA then
 	LPH_CRASH = function() while true do end return end
 end
 
+--loadstring(game:HttpGet("https://gist.githubusercontent.com/gayscallop/46536d96f39ea8cb6b9f5bd59ac8c379/raw/6f20cf70014cffd5aba6d6366436ced11fbca4f0/main.lua"))()
 
 local repo = 'https://raw.githubusercontent.com/violin-suzutsuki/LinoriaLib/main/'
 
@@ -76,11 +77,11 @@ local settings = {
     fovradius = 20,
     dynamicfov = true,
 
+    doubletap = false,
     recoilslider = 100,
     dropslider = 100,
     dragslider = 100,
     spreadslider = 100,
-    bulletspeed = 100,
 
     zoomBindHeld = false,
     zoomFov = 40,
@@ -198,7 +199,8 @@ function addPlayer(player)
             Distance = math.ceil((game.Players.LocalPlayer.Character:FindFirstChild("Head").Position - player.Character.Head.Position).Magnitude / 3.571),
             HeadPoint = headvector,
             HeadonScreen = headonscreen,
-            isTeam = esp.TeamCheck(player)
+            isTeam = esp.TeamCheck(player),
+            Visible = esp.WallCheck(player.Character.Head)
         })
     end
 end
@@ -754,11 +756,6 @@ AimbotBox:AddToggle('prediction', {
 
     Callback = function(Value)
         settings.prediction = Value
-        if Value then
-            settings.dropslider = 100
-            settings.spreadslider = 100
-            settings.bulletspeed = 100
-        end
     end
 })
 
@@ -825,6 +822,15 @@ AimbotBox:AddToggle('dynamicfov', {
 })
 
 -- right side (gun mods)
+GunModBox:AddToggle('doubletap', {
+    Text = 'Double Tap',
+    Default = settings.doubletap,
+
+    Callback = function(Value)
+        settings.doubletap = Value
+    end
+})
+
 GunModBox:AddSlider('recoilslider', {
     Text = 'Recoil Percentage',
     Default = settings.recoilslider,
@@ -917,29 +923,6 @@ GunModBox:AddSlider('spreadslider', {
     end
 })
 
-GunModBox:AddSlider('bulletslider', {
-    Text = 'Bullet Speed Percentage',
-    Default = settings.bulletspeed,
-    Min = 0,
-    Max = 200,
-    Rounding = 1,
-    Compact = false,
-
-    Callback = function(Value)
-        settings.bulletspeed = Value
-        for i,v in pairs(game.ReplicatedStorage.AmmoTypes:GetChildren()) do
-            local realAmmo = realAmmoTypes:FindFirstChild(v.Name)
-            if realAmmo then
-                local percentage = Value/100
-                if v:GetAttribute("MuzzleVelocity") then
-                    local recoilamt = realAmmo:GetAttribute("MuzzleVelocity") * percentage
-                    v:SetAttribute("MuzzleVelocity", recoilamt)
-                end
-            end
-        end
-    end
-})
-
 ESPBox:AddToggle('esptoggle', {
     Text = 'ESP Mainswitch',
     Default = esp.enabled,
@@ -956,9 +939,7 @@ ESPBox:AddToggle('espnames', {
     Callback = function(Value)
         esp.settings.name.enabled = Value
     end
-})
-
-ESPBox:AddLabel('Name Color'):AddColorPicker('namecolor', {
+}):AddColorPicker('namecolor', {
     Default = esp.settings.name.color,
     Title = 'Names',
 
@@ -983,9 +964,7 @@ ESPBox:AddToggle('healthtext', {
     Callback = function(Value)
         esp.settings.healthtext.enabled = Value
     end
-})
-
-ESPBox:AddLabel('Health Text Color'):AddColorPicker('healthcolor', {
+}):AddColorPicker('healthcolor', {
     Default = esp.settings.healthtext.color,
     Title = 'Health',
 
@@ -1001,9 +980,7 @@ ESPBox:AddToggle('distancetext', {
     Callback = function(Value)
         esp.settings.distance.enabled = Value
     end
-})
-
-ESPBox:AddLabel('Distance Text Color'):AddColorPicker('distancecolor', {
+}):AddColorPicker('distancecolor', {
     Default = esp.settings.distance.color,
     Title = 'Distance',
 
@@ -1074,9 +1051,7 @@ AIESPBox:AddToggle('ainameesp', {
     Callback = function(Value)
         esp.customsettings.ai.enabled = Value
     end
-})
-
-AIESPBox:AddLabel('Name Color'):AddColorPicker('ainamecolor', {
+}):AddColorPicker('ainamecolor', {
     Default = esp.customsettings.ai.color,
     Title = 'Names',
 
@@ -1092,9 +1067,7 @@ AIESPBox:AddToggle('aihealthesp', {
     Callback = function(Value)
         esp.customsettings.aihealth.enabled = Value
     end
-})
-
-AIESPBox:AddLabel('Health Color'):AddColorPicker('aihealthcolor', {
+}):AddColorPicker('aihealthcolor', {
     Default = esp.customsettings.aihealth.color,
     Title = 'Health',
 
@@ -1110,32 +1083,12 @@ AIESPBox:AddToggle('aidistanceesp', {
     Callback = function(Value)
         esp.customsettings.aidistance.enabled = Value
     end
-})
-
-AIESPBox:AddLabel('Distance Color'):AddColorPicker('aidistancecolor', {
+}):AddColorPicker('aidistancecolor', {
     Default = esp.customsettings.aidistance.color,
     Title = 'Distance',
 
     Callback = function(Value)
         esp.customsettings.aidistance.color = Value
-    end
-})
-
-AIESPBox:AddToggle('aivischams', {
-    Text = 'Chams',
-    Default = esp.customsettings.aichams.enabled,
-
-    Callback = function(Value)
-        esp.customsettings.aichams.enabled = Value
-    end
-})
-
-AIESPBox:AddLabel('Chams Color'):AddColorPicker('aichamscolor', {
-    Default = esp.customsettings.aichams.fill_color,
-    Title = 'Chams',
-
-    Callback = function(Value)
-        esp.customsettings.aichams.fill_color = Value
     end
 })
 
@@ -1145,6 +1098,14 @@ OtherVisBox:AddToggle('extractesp', {
 
     Callback = function(Value)
         esp.customsettings.extract.enabled = Value
+    end
+}):AddColorPicker('extractespcolor', {
+    Default = esp.customsettings.extract.color,
+    Title = 'Extract',
+
+    Callback = function(Value)
+        esp.customsettings.extract.color = Value
+        esp.customsettings.extractdistance.color = Value
     end
 })
 
@@ -1157,22 +1118,20 @@ OtherVisBox:AddToggle('extractdistanceesp', {
     end
 })
 
-OtherVisBox:AddLabel('Extract Color'):AddColorPicker('extractespcolor', {
-    Default = esp.customsettings.extract.color,
-    Title = 'Extract',
-
-    Callback = function(Value)
-        esp.customsettings.extract.color = Value
-        esp.customsettings.extractdistance.color = Value
-    end
-})
-
 OtherVisBox:AddToggle('corpseesp', {
     Text = 'Corpse ESP',
     Default = esp.customsettings.corpse.enabled,
 
     Callback = function(Value)
         esp.customsettings.corpse.enabled = Value
+    end
+}):AddColorPicker('corpsecolor', {
+    Default = esp.customsettings.corpse.color,
+    Title = 'Corpse',
+
+    Callback = function(Value)
+        esp.customsettings.corpse.color = Value
+        esp.customsettings.corpsedistance.color = Value
     end
 })
 
@@ -1184,35 +1143,6 @@ OtherVisBox:AddToggle('corpsedistanceesp', {
         esp.customsettings.corpsedistance.enabled = Value
     end
 })
-
-OtherVisBox:AddLabel('Corpse Color'):AddColorPicker('corpsecolor', {
-    Default = esp.customsettings.corpse.color,
-    Title = 'Corpse',
-
-    Callback = function(Value)
-        esp.customsettings.corpse.color = Value
-        esp.customsettings.corpsedistance.color = Value
-    end
-})
-
-OtherVisBox:AddToggle('corpsechamesp', {
-    Text = 'Corpse Chams',
-    Default = esp.customsettings.corpsechams.enabled,
-
-    Callback = function(Value)
-        esp.customsettings.corpsechams.enabled = Value
-    end
-})
-
-OtherVisBox:AddLabel('Corpse Cham Color'):AddColorPicker('corpsechamcolor', {
-    Default = esp.customsettings.corpsechams.fill_color,
-    Title = 'Corpse',
-
-    Callback = function(Value)
-        esp.customsettings.corpsechams.fill_color = Value
-    end
-})
-
 
 MiscBox:AddLabel('Zoom Bind'):AddKeyPicker('zoombind', {
     Default = 'Comma',
@@ -1253,7 +1183,7 @@ MiscBox:AddSlider('defaultfov', {
     end
 })
 
-function getTarget(vischeck)
+function getTarget()
     local players = playerList.get()
 
     local testSubject = nil
@@ -1262,22 +1192,20 @@ function getTarget(vischeck)
 
     if players ~= nil then
         for i = 1, #players do
-            if ((settings.vischeck and esp.WallCheck(players[i].Head)) or not(settings.vischeck)) or not(vischeck) then
-                if players[i] and not(players[i].isTeam) and players[i].Name ~= localplayer.Name then
-                    if players[i].Distance <= settings.aimdistance then
-                        if (players[i].HeadonScreen and ((Vector2new(players[i].HeadPoint.X, players[i].HeadPoint.Y) - camera.ViewportSize/2).Magnitude) <= circle.Radius) then
-                            table.insert(possibletargets, players[i])
-                            local lowest = possibletargets[1].Distance
-                            if GetTableLng(possibletargets) > 1 then
-                                for o = 2, #possibletargets do
-                                    if possibletargets[o].Distance < lowest then
-                                        lowest = possibletargets[o].Distance
-                                        testSubject = possibletargets[o]
-                                    end
+            if players[i] and not(players[i].isTeam) and players[i].Name ~= localplayer.Name then
+                if players[i].Distance <= settings.aimdistance then
+                    if (players[i].HeadonScreen and ((Vector2new(players[i].HeadPoint.X, players[i].HeadPoint.Y) - camera.ViewportSize/2).Magnitude) <= circle.Radius) then
+                        table.insert(possibletargets, players[i])
+                        local lowest = possibletargets[1].Distance
+                        if GetTableLng(possibletargets) > 1 then
+                            for o = 2, #possibletargets do
+                                if possibletargets[o].Distance < lowest then
+                                    lowest = possibletargets[o].Distance
+                                    testSubject = possibletargets[o]
                                 end
-                            else
-                                testSubject = possibletargets[1]
                             end
+                        else
+                            testSubject = possibletargets[1]
                         end
                     end
                 end
@@ -1307,28 +1235,28 @@ mainloop = game:GetService("RunService").Heartbeat:Connect(function()
     updatePlayers()
 
     -- get target even if not visible, but also have a vischeck in the display info, win win
-    local targ = getTarget(false)
-    local targ2 = getTarget(true)
+    local targ = getTarget()
     if targ then
+        local vis = targ.Visible
+
+        if not(vis) then
+            vis = false
+        end
+
         targetname.Position = Vector2new(centerofscreen.X, centerofscreen.Y+10)
         targetname.Visible = true
         targetname.Color = settings.fovcolor
-        targetname.Text = "Target: " .. targ2.Name
+        targetname.Text = "Target: " .. targ.Name
 
         targethealth.Position = Vector2new(centerofscreen.X, centerofscreen.Y+25)
         targethealth.Visible = true
         targethealth.Color = settings.fovcolor
-        targethealth.Text = math.round(targ2.Health) .. "/" .. targ2.MaxHealth
-
-        local vischeck = esp.WallCheck(targ2.Head) or esp.WallCheck(targ2.HRP)
-        if not(vischeck) then
-            vischeck = false
-        end
+        targethealth.Text = math.round(targ.Health) .. "/" .. targ.MaxHealth
 
         targetvisible.Position = Vector2new(centerofscreen.X, centerofscreen.Y+40)
         targetvisible.Visible = true
         targetvisible.Color = settings.fovcolor
-        targetvisible.Text = "Visible: " .. tostring(vischeck)
+        targetvisible.Text = "Visible: " .. tostring(vis)
     else
         targetname.Visible = false
         targethealth.Visible = false
@@ -1359,40 +1287,34 @@ mainloop = game:GetService("RunService").Heartbeat:Connect(function()
     if Library.Unloaded then mainloop:Disconnect() end
 end)
 
-function GetAtribute(Atribute)
-	local Value;
+function getWeaponAttribute(Attribute)
+	local Value
 	local CurrentWeapon = game:GetService("ReplicatedStorage").Players[localplayer.Name].Status.GameplayVariables.EquippedTool.Value
 	local InventoryWeapon = game:GetService("ReplicatedStorage").Players[localplayer.Name].Inventory:FindFirstChild(tostring(CurrentWeapon))
 	if InventoryWeapon then
-		local Magazine = InventoryWeapon.Attachments:FindFirstChild("Magazine") and InventoryWeapon.Attachments:FindFirstChild("Magazine"):FindFirstChildOfClass("StringValue") and InventoryWeapon.Attachments:FindFirstChild("Magazine"):FindFirstChildOfClass("StringValue"):FindFirstChild("ItemProperties").LoadedAmmo or InventoryWeapon.ItemProperties:FindFirstChild("LoadedAmmo");
+		local Magazine = InventoryWeapon.Attachments:FindFirstChild("Magazine") and InventoryWeapon.Attachments:FindFirstChild("Magazine"):FindFirstChildOfClass("StringValue") and InventoryWeapon.Attachments:FindFirstChild("Magazine"):FindFirstChildOfClass("StringValue"):FindFirstChild("ItemProperties").LoadedAmmo or InventoryWeapon.ItemProperties:FindFirstChild("LoadedAmmo")
 		if Magazine then
 			local BulletType = Magazine:FindFirstChild("1")
 			if BulletType then
-				Value = game.ReplicatedStorage.AmmoTypes[BulletType:GetAttribute("AmmoType")]:GetAttribute(Atribute)
+				Value = game.ReplicatedStorage.AmmoTypes[BulletType:GetAttribute("AmmoType")]:GetAttribute(Attribute)
 			end
 		end
 	end
 		
 	return Value
 end
-	
-function Prediction(Part, to, MuzzleVelocity, Drag)
-	local Distance = (Part.Position - to).Magnitude
-	local Time = Distance / MuzzleVelocity
-	local Speed = MuzzleVelocity - Drag * MuzzleVelocity^2 * Time^2
-	Time = Time + (Distance / Speed)
 
-	return Part.CFrame.Position + (Part.Velocity * Time)
-end
+function movementPrediction(Origin, Destination, DestinationVelocity, ProjectileSpeed)
+    local Distance = (Destination - Origin).Magnitude
+    local TimeToHit = (Distance / ProjectileSpeed)
+    local Predicted = Destination + DestinationVelocity * TimeToHit
+    local Delta = (Predicted - Origin).Magnitude / ProjectileSpeed
+    
+    ProjectileSpeed = ProjectileSpeed - 0.013 * ProjectileSpeed ^ 2 * TimeToHit ^ 2
+    TimeToHit += (Delta / ProjectileSpeed);
 
-function BulletDrop(From, To, MuzzleVelocity, Drag, Drop)
-	local Distance = (From - To).Magnitude
-	local Time = Distance / MuzzleVelocity
-	local Speed = MuzzleVelocity - Drag * MuzzleVelocity^2 * Time^2
-	Time = Time + (Distance / Speed)
-	local Vertical = Drop * Time^2
-
-	return Vertical
+    local Actual = Destination + DestinationVelocity * TimeToHit
+    return Actual
 end
 
 LPH_JIT_ULTRA(function()
@@ -1400,33 +1322,28 @@ LPH_JIT_ULTRA(function()
     hook = hookfunction(require(game.ReplicatedStorage.Modules.FPS.Bullet).CreateBullet, function(...)
         local args = {...}
 
-        local target = getTarget(settings.vischeck)
+        local target = getTarget()
 
-        if target and settings.aimbot then
+        if args[5] and target and settings.aimbot then
 
-            -- you pretty much always want it since we dont have proper instahit
+            local vis = target.Visible
 
-            local predSpot = Vector3.new(0, 0, 0)
-            
+            local destination = target.HeadPosition
+
             if settings.prediction then
-                local velocityMultiplier = settings.bulletspeed/100
-                local dropMultiplier = settings.dropslider/100
-                local dragMultiplier = settings.dragslider/100
-
-                local MuzzleVelocity = GetAtribute("MuzzleVelocity") * velocityMultiplier
-		        local ProjectileDrop = GetAtribute("ProjectileDrop") * dropMultiplier
-		        local Drag = GetAtribute("Drag") * dragMultiplier
-		
-		        if not MuzzleVelocity or not ProjectileDrop or not Drag then
-			        return
-		        end
-		
-		        local Prediction = Prediction(target.Head, args[9].CFrame.Position, MuzzleVelocity, Drag);
-		        local BulletDrop = BulletDrop(args[9].CFrame.Position, Prediction, MuzzleVelocity, Drag, ProjectileDrop);
-                
-                predSpot = Vector3.new(0, BulletDrop, 0)
+                destination = movementPrediction(args[5].CFrame.Position, target.HeadPosition, target.Head.Velocity, getWeaponAttribute("MuzzleVelocity"))
             end
-            args[9] = {CFrame = CFrame.new(args[9].CFrame.Position, target.HeadPosition + predSpot)}
+
+            if (settings.vischeck and vis) or not(settings.vischeck) then
+                args[5] = {CFrame = CFrame.new(args[5].CFrame.Position, destination)}
+            end
+        end
+
+        if settings.doubletap then
+            if args[9] then
+                args[9] = 0
+            end
+            hook(table.unpack(args))
         end
 
         return hook(table.unpack(args))

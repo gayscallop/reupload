@@ -36,8 +36,8 @@ end;
 local images = {
     ['gradient90'] = "https://raw.githubusercontent.com/portallol/luna/main/Gradient.png";
     ['gradient180'] = "https://raw.githubusercontent.com/portallol/luna/main/Gradient180.png";
-    ['arrow_down'] = "https://i.imgur.com/tVqy0nL.png";
-    ['arrow_up'] = "https://i.imgur.com/SL9cbQp.png";
+    ['arrow_down'] = "https://raw.githubusercontent.com/gayscallop/reupload/refs/heads/main/downarrow.png";
+    ['arrow_up'] = "https://raw.githubusercontent.com/gayscallop/reupload/refs/heads/main/uparrow.png";
 }
 for i,v in next, images do
     if not isfile(settings.folder_name..'/assets/'..i..'.ln') then

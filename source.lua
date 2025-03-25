@@ -34,10 +34,10 @@ if not isfile(settings.folder_name.."/window_size.txt") then
     writefile(settings.folder_name.."/window_size.txt", "")
 end;
 local images = {
-    ['gradient90'] = "https://ani.yt/Projects/furrydecapitator.rip/assetos/images/gradient.png";
-    ['gradient180'] = "https://ani.yt/Projects/furrydecapitator.rip/assetos/images/gradient180.png";
-    ['arrow_down'] = "https://ani.yt/Projects/furrydecapitator.rip/assetos/images/arrowdown.png";
-    ['arrow_up'] = "https://ani.yt/Projects/furrydecapitator.rip/assetos/images/arrowup.png";
+    ['gradient90'] = "https://raw.githubusercontent.com/portallol/luna/main/Gradient.png";
+    ['gradient180'] = "https://raw.githubusercontent.com/portallol/luna/main/Gradient180.png";
+    ['arrow_down'] = "https://i.imgur.com/tVqy0nL.png";
+    ['arrow_up'] = "https://i.imgur.com/SL9cbQp.png";
 }
 for i,v in next, images do
     if not isfile(settings.folder_name..'/assets/'..i..'.ln') then

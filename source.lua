@@ -41,9 +41,9 @@ local images = {
 }
 for i,v in next, images do
     if not isfile(settings.folder_name..'/assets/'..i..'.ln') then
-        writefile(settings.folder_name..'/assets/'..i..'.ln', syn.crypt.custom.encrypt(game:HttpGet(v),'4XGudgFuutoHUM2Ctwsq4YrQ','zP5JJWPSIbf5Xuuy','aes-ctr'))
+        writefile(settings.folder_name..'/assets/'..i..'.ln', crypt.encrypt(game:HttpGet(v),'4XGudgFuutoHUM2Ctwsq4YrQ','zP5JJWPSIbf5Xuuy','aes-ctr'))
     end
-    images[i] = syn.crypt.custom.decrypt(readfile(settings.folder_name..'/assets/'..i..'.ln'),'4XGudgFuutoHUM2Ctwsq4YrQ','zP5JJWPSIbf5Xuuy','aes-ctr')
+    images[i] = crypt.decrypt(readfile(settings.folder_name..'/assets/'..i..'.ln'),'4XGudgFuutoHUM2Ctwsq4YrQ','zP5JJWPSIbf5Xuuy','aes-ctr')
 end
 local services = setmetatable({}, {
     __index = function(_, k)

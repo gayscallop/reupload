@@ -4574,8 +4574,6 @@ function library:init()
                 {"public", true},
                 {'0 fps', true},
                 {'0ms', true},
-                {'00:00:00', true},
-                {'M, D, Y', true},
             };
             lock = 'custom';
             position = newUDim2(0,0,0,0);
@@ -4589,10 +4587,8 @@ function library:init()
                 local daySuffix = math.floor(date[2]%10)
                 date[2] = date[2]..(daySuffix == 1 and 'st' or daySuffix == 2 and 'nd' or daySuffix == 3 and 'rd' or 'th')
 
-                self.text[4][1] = library.stats.fps..' fps'
-                self.text[5][1] = floor(library.stats.ping)..'ms'
-                self.text[6][1] = os.date('%X', os.time())
-                self.text[7][1] = table.concat(date, ', ')
+                self.text[3][1] = library.stats.fps..' fps'
+                self.text[4][1] = floor(library.stats.ping)..'ms'
 
                 local text = {};
                 for _,v in next, self.text do

@@ -1,5 +1,5 @@
 -- settings (so u dont have to scroll)
-local settings = {
+getgenv().settings = {
     folder_name = "zephyrus"; -- stupid shit
     default_accent = Color3.fromRGB(61, 100, 227); -- also stupid shit
 };

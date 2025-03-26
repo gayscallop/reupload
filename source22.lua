@@ -5561,4 +5561,87 @@ function library:init_window(cfg)
     return window_table;
 end;
 
+local CHEAT_CLIENT = {} do
+    do --// set up tables
+        CHEAT_CLIENT.drawings = {}
+        CHEAT_CLIENT.connections = {}
+        CHEAT_CLIENT.objects = {}
+        CHEAT_CLIENT.resolver = {} do
+            old_position = Vector3.new(0,0,0)
+            velocity = 0
+        end
+        CHEAT_CLIENT.aimbot = {
+            target = nil
+        }
+    end
+
+    do --// set up client
+        CHEAT_CLIENT.player = game.Players.LocalPlayer
+        CHEAT_CLIENT.camera = game.Workspace.CurrentCamera
+        CHEAT_CLIENT.mouse = CHEAT_CLIENT.player:GetMouse()
+    end
+
+    do --// set up functions
+        function CHEAT_CLIENT:connect(signal, callback)
+            local connection = signal:Connect(callback)
+            table.insert(CHEAT_CLIENT.connections, connection)
+            return connection
+        end
+
+        function CHEAT_CLIENT:draw(drawing, properties)
+            local new_drawing = Drawing.new(drawing)
+            for i,v in pairs(properties) do
+                new_drawing[i] = v
+            end
+            table.insert(CHEAT_CLIENT.drawings, new_drawing)
+            return new_drawing
+        end
+
+        LPH_NO_VIRTUALIZE(function()
+            function CHEAT_CLIENT:get_target()
+                local current_target = nil
+                local maximum_distance = math.huge
+    
+                for i,v in pairs(game.Players:GetPlayers()) do
+                    if v == game.Players.LocalPlayer then continue end
+                    if v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                        local position, on_screen = CHEAT_CLIENT.camera:WorldToViewportPoint(v.Character.HumanoidRootPart.Position)
+                        if not on_screen then continue end
+                        local distance = (Vector2.new(position.X, position.Y - game.GuiService:GetGuiInset(game.GuiService).Y) - Vector2.new(CHEAT_CLIENT.mouse.X, CHEAT_CLIENT.mouse.Y)).Magnitude
+                        if library.flags.drawings_fov_enabled and distance > library.flags.drawings_fov_radius then continue end
+                        if library.flags.target_ignore_teammates and CHEAT_CLIENT.player.Team == v.Team then continue end
+                        if distance > maximum_distance then continue end
+                        current_target = v
+                        maximum_distance = distance
+                    end
+                end
+
+                return current_target
+            end
+
+            function CHEAT_CLIENT:get_closest_body_part(player)
+                local current_target = nil
+                local maximum_distance = math.huge
+    
+                for i,v in pairs(player:GetChildren()) do
+                    if v:IsA("MeshPart") or v:IsA("Part") then
+                        local position, on_screen = CHEAT_CLIENT.camera:WorldToViewportPoint(v.Position)
+                        if not on_screen then continue end
+                        local distance = (Vector2.new(position.X, position.Y - game.GuiService:GetGuiInset(game.GuiService).Y) - Vector2.new(CHEAT_CLIENT.mouse.X, CHEAT_CLIENT.mouse.Y)).Magnitude
+                        if distance > maximum_distance then continue end
+                        current_target = v
+                        maximum_distance = distance
+                    end
+                end
+    
+                return current_target
+            end
+        end)()
+    end
+
+    CHEAT_CLIENT.objects.fov_circle_outline = CHEAT_CLIENT:draw("Circle", {Position = Vector2.new(CHEAT_CLIENT.camera.ViewportSize.X / 2, CHEAT_CLIENT.camera.ViewportSize.Y / 2), Visible = false, Radius = 100, Filled = false, Thickness = 5, Transparency = 1, NumSides = 0, Color = Color3.new(0,0,0)})
+    CHEAT_CLIENT.objects.fov_circle = CHEAT_CLIENT:draw("Circle", {Position = Vector2.new(CHEAT_CLIENT.camera.ViewportSize.X / 2, CHEAT_CLIENT.camera.ViewportSize.Y / 2), Visible = false, Radius = 100, Filled = false, Thickness = 2, Transparency = 1, NumSides = 0, Color = Color3.new(1,1,1)})
+    CHEAT_CLIENT.objects.watermark = CHEAT_CLIENT:draw("Text", {Position = Vector2.new(CHEAT_CLIENT.camera.ViewportSize.X / 12, CHEAT_CLIENT.camera.ViewportSize.Y / 80), Font = 2, Size = 13, Text = "anis private cracked", Outline = true, Center = true, Color = Color3.new(1,1,1)})
+end
+
 return library, settings

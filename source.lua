@@ -41,7 +41,7 @@ local images = {
 }
 for i,v in next, images do
     if not isfile(settings.folder_name..'/assets/'..i..'.ln') then
-        writefile(settings.folder_name..'/assets/'..i..'.ln', crypt.base64encode(game:HttpGet(v))
+        writefile(settings.folder_name..'/assets/'..i..'.ln', crypt.base64encode(game:HttpGet(v)))
     end
     images[i] = crypt.base64decode(readfile(settings.folder_name..'/assets/'..i..'.ln'))
 end

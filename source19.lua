@@ -5561,8 +5561,6 @@ function library:init_window(cfg)
     return window_table;
 end;
 
-local esp_library = loadstring(game:HttpGet("https://pastebin.com/raw/g1HsMEqB"))()
-
 local CHEAT_CLIENT = {} do
     do --// set up tables
         CHEAT_CLIENT.drawings = {}

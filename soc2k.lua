@@ -4683,6 +4683,7 @@ function library:init()
     
     self.targetIndicator = self.NewIndicator({title = 'Target Info', pos = newUDim2(0,15,0,350), enabled = true});
     self.targetName = self.targetIndicator:AddValue({key = 'Name     :', value = 'nil'})
+    self.targetVis = self.targetIndicator:AddValue({key = 'Visible   :', value = 'false'})
     self.targetHealth = self.targetIndicator:AddValue({key = 'Health   :', value = '0hp'})
     self.targetDistance = self.targetIndicator:AddValue({key = 'Distance :', value = '0m'})
     self.targetTool = self.targetIndicator:AddValue({key = 'Weapon   :', value = 'nil'})

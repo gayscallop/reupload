@@ -4738,6 +4738,10 @@ function library:CreateSettingsTab(menu)
         library:SetOpen(not library.open)
     end});
 
+    mainSection:AddButton({text = 'Dex Explorer', confirm = true, callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/dex.lua"))()
+    end})
+
     mainSection:AddButton({text = 'Rejoin Server', confirm = true, callback = function()
         game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId);
     end})

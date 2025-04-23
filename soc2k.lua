@@ -4577,42 +4577,39 @@ function library:init()
             };
             lock = 'custom';
             position = newUDim2(0,0,0,0);
-            refreshrate = 25;
+            refreshrate = 10;
         }
 
         function self.watermark:Update()
             self.objects.background.Visible = library.flags.watermark_enabled
             if library.flags.watermark_enabled then
-                task.spawn(function()
-                    task.wait(0.5)
-                    self.text[3][1] = library.stats.fps..' fps'
-                    self.text[4][1] = floor(library.stats.ping)..'ms'
+                self.text[3][1] = library.stats.fps..' fps'
+                self.text[4][1] = floor(library.stats.ping)..'ms'
                 
                 
-                    local text = {};
-                    for _,v in next, self.text do
-                        if v[2] then
-                            table.insert(text, v[1]);
-                        end
+                local text = {};
+                for _,v in next, self.text do
+                    if v[2] then
+                        table.insert(text, v[1]);
                     end
+                end
 
-                    self.objects.text.Text = table.concat(text,' | ')
-                    self.objects.background.Size = newUDim2(0, self.objects.text.TextBounds.X + 10, 0, 17)
+                self.objects.text.Text = table.concat(text,' | ')
+                self.objects.background.Size = newUDim2(0, self.objects.text.TextBounds.X + 10, 0, 17)
 
-                    local size = self.objects.background.Object.Size;
-                    local screensize = workspace.CurrentCamera.ViewportSize;
+                local size = self.objects.background.Object.Size;
+                local screensize = workspace.CurrentCamera.ViewportSize;
 
-                    self.position = (
-                        self.lock == 'Top Right' and newUDim2(0, screensize.X - size.X - 15, 0, 15) or
-                        self.lock == 'Top Left' and newUDim2(0, 15, 0, 15) or
-                        self.lock == 'Bottom Right' and newUDim2(0, screensize.X - size.X - 15, 0, screensize.Y - size.Y - 15) or
-                        self.lock == 'Bottom Left' and newUDim2(0, 15, 0, screensize.Y - size.Y - 15) or
-                        self.lock == 'Top' and newUDim2(0, screensize.X / 2 - size.X / 2, 0, 15) or
-                        newUDim2(library.flags.watermark_x / 100, 0, library.flags.watermark_y / 100, 0)
-                    )
+                self.position = (
+                    self.lock == 'Top Right' and newUDim2(0, screensize.X - size.X - 15, 0, 15) or
+                    self.lock == 'Top Left' and newUDim2(0, 15, 0, 15) or
+                    self.lock == 'Bottom Right' and newUDim2(0, screensize.X - size.X - 15, 0, screensize.Y - size.Y - 15) or
+                    self.lock == 'Bottom Left' and newUDim2(0, 15, 0, screensize.Y - size.Y - 15) or
+                    self.lock == 'Top' and newUDim2(0, screensize.X / 2 - size.X / 2, 0, 15) or
+                    newUDim2(library.flags.watermark_x / 100, 0, library.flags.watermark_y / 100, 0)
+                )
 
-                    self.objects.background.Position = self.position
-                end)
+                self.objects.background.Position = self.position
             end
         end
 

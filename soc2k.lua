@@ -4685,6 +4685,9 @@ function library:init()
     self.targetVis = self.targetIndicator:AddValue({key = 'Visible  ', value = 'false'})
     self.targetDistance = self.targetIndicator:AddValue({key = 'Distance ', value = '0m'})
 
+    self.inventoryIndicator = self.NewIndicator({title = 'Target Inventory', pos = newUDim2(0,15,0,350), enabled = true});
+    self.inventoryHotbar = self.inventoryIndicator:AddValue({key = 'Hotbar     ', value = 'nil'})
+
     self:SetTheme(library.theme);
     self:SetOpen(true);
     self.hasInit = true
@@ -4777,14 +4780,24 @@ function library:CreateSettingsTab(menu)
         library.keyIndicator:SetPosition(newUDim2(library.flags.keybind_indicator_x / 100, 0, library.flags.keybind_indicator_y / 100, 0));    
     end});
 
-    mainSection:AddToggle({text = 'Target Info', flag = 'target_info', state = true, callback = function(bool)
+    mainSection:AddToggle({text = 'Target Info', flag = 'target_info', state = false, callback = function(bool)
         library.targetIndicator:SetEnabled(bool);
     end})
-    mainSection:AddSlider({text = 'Position X', flag = 'target_info_x', min = 0, max = 100, increment = .1, value = 10, callback = function()
+    mainSection:AddSlider({text = 'Position X', flag = 'target_info_x', min = 0, max = 100, increment = .1, value = .5, callback = function()
         library.targetIndicator:SetPosition(newUDim2(library.flags.target_info_x / 100, 0, library.flags.target_info_y / 100, 0));    
     end});
-    mainSection:AddSlider({text = 'Position Y', flag = 'target_info_y', min = 0, max = 100, increment = .1, value = 15, callback = function()
+    mainSection:AddSlider({text = 'Position Y', flag = 'target_info_y', min = 0, max = 100, increment = .1, value = 30, callback = function()
         library.targetIndicator:SetPosition(newUDim2(library.flags.target_info_x / 100, 0, library.flags.target_info_y / 100, 0));    
+    end});
+
+    mainSection:AddToggle({text = 'Target Inventory', flag = 'target_inventory', state = false, callback = function(bool)
+        library.inventoryIndicator:SetEnabled(bool);
+    end})
+    mainSection:AddSlider({text = 'Position X', flag = 'target_inventory_x', min = 0, max = 100, increment = .1, value = .5, callback = function()
+        library.inventoryIndicator:SetPosition(newUDim2(library.flags.target_inventory_x / 100, 0, library.flags.target_inventory_y / 100, 0));    
+    end});
+    mainSection:AddSlider({text = 'Position Y', flag = 'target_inventory_y', min = 0, max = 100, increment = .1, value = 30, callback = function()
+        library.inventoryIndicator:SetPosition(newUDim2(library.flags.target_inventory_x / 100, 0, library.flags.target_inventory_y / 100, 0));
     end});
 
 

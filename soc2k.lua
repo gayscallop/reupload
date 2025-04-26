@@ -4688,7 +4688,7 @@ function library:init()
     self.inventoryIndicator = self.NewIndicator({title = 'Target Inventory', pos = newUDim2(0,15,0,350), enabled = false});
     self.hotbarSlot1 = self.inventoryIndicator:AddValue({key = 'Slot 1     ', value = 'none'})
     self.hotbarSlot2 = self.inventoryIndicator:AddValue({key = 'Slot 2     ', value = 'none'})
-    self.hotbarSlot2 = self.inventoryIndicator:AddValue({key = 'Slot 3     ', value = 'none'})
+    self.hotbarSlot3 = self.inventoryIndicator:AddValue({key = 'Slot 3     ', value = 'none'})
     self.inventoryGloves = self.inventoryIndicator:AddValue({key = 'Gloves     ', value = 'none'})
     self.inventoryHelmet = self.inventoryIndicator:AddValue({key = 'Helmet     ', value = 'none'})
     self.inventoryMask = self.inventoryIndicator:AddValue({key = 'Mask     ', value = 'none'})

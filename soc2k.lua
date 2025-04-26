@@ -4678,15 +4678,25 @@ function library:init()
 
     self.keyIndicator = self.NewIndicator({title = 'Keybinds', pos = newUDim2(0,15,0,325), enabled = true});
     
-    self.targetIndicator = self.NewIndicator({title = 'Target Info', pos = newUDim2(0,15,0,350), enabled = true});
+    self.targetIndicator = self.NewIndicator({title = 'Target Info', pos = newUDim2(0,15,0,350), enabled = false});
     self.targetName = self.targetIndicator:AddValue({key = 'Name     ', value = 'nil'})
     self.targetHealth = self.targetIndicator:AddValue({key = 'Health   ', value = '0hp'})
     self.targetTool = self.targetIndicator:AddValue({key = 'Weapon   ', value = 'nil'})
     self.targetVis = self.targetIndicator:AddValue({key = 'Visible  ', value = 'false'})
     self.targetDistance = self.targetIndicator:AddValue({key = 'Distance ', value = '0m'})
 
-    self.inventoryIndicator = self.NewIndicator({title = 'Target Inventory', pos = newUDim2(0,15,0,350), enabled = true});
-    self.inventoryHotbar = self.inventoryIndicator:AddValue({key = 'Hotbar     ', value = 'nil'})
+    self.inventoryIndicator = self.NewIndicator({title = 'Target Inventory', pos = newUDim2(0,15,0,350), enabled = false});
+    self.hotbarSlot1 = self.inventoryIndicator:AddValue({key = 'Slot 1     ', value = 'none'})
+    self.hotbarSlot2 = self.inventoryIndicator:AddValue({key = 'Slot 2     ', value = 'none'})
+    self.hotbarSlot2 = self.inventoryIndicator:AddValue({key = 'Slot 3     ', value = 'none'})
+    self.inventoryGloves = self.inventoryIndicator:AddValue({key = 'Gloves     ', value = 'none'})
+    self.inventoryHelmet = self.inventoryIndicator:AddValue({key = 'Helmet     ', value = 'none'})
+    self.inventoryMask = self.inventoryIndicator:AddValue({key = 'Mask     ', value = 'none'})
+    self.inventoryBackpack = self.inventoryIndicator:AddValue({key = 'Backpack     ', value = 'none'})
+    self.inventoryRig = self.inventoryIndicator:AddValue({key = 'Rig     ', value = 'none'})
+    self.inventoryShirt = self.inventoryIndicator:AddValue({key = 'Shirt     ', value = 'none'})
+    self.inventoryLeg = self.inventoryIndicator:AddValue({key = 'Leg     ', value = 'none'})
+    self.inventoryPants = self.inventoryIndicator:AddValue({key = 'Pants     ', value = 'none'})
 
     self:SetTheme(library.theme);
     self:SetOpen(true);
